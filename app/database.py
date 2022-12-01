@@ -1,0 +1,33 @@
+import logging
+from typing import Iterable
+
+from sqlalchemy import Table
+from sqlmodel import SQLModel, create_engine
+
+from app.core.config import settings
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+engine = create_engine(url=settings.SQLALCHEMY_DATABASE_URI, echo=False)
+
+
+def create_db_and_tables():
+    env = settings.ENVIRONMENT
+    logger.info(f'{env=}')
+
+    if env not in ('prod', 'dev'):
+        logger.info('Dropping tables')
+        SQLModel.metadata.drop_all(engine)
+
+    logger.info('Creating tables')
+    # log_table_info(SQLModel.metadata.sorted_tables)
+    SQLModel.metadata.create_all(engine)
+
+
+def log_table_info(tables: list[Table]):
+    for table in tables:
+        cols = table.columns if isinstance(table.columns, Iterable) else None
+        col_log = ',\n\t\t'.join(repr(c) for c in cols)
+        constraints = '\n'.join(repr(c.parent) for c in table.constraints)
+        logger.info(f'{table.name.upper()}:\n\t\t{col_log}')

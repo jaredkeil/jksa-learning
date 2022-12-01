@@ -1,0 +1,49 @@
+[tool.poetry]
+name = "app"
+version = "0.1.0"
+description = ""
+authors = ["Jared Keil <jaredrkeil@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.78.0"
+uvicorn = "^0.18.2"
+SQLAlchemy = "<=1.4.35"
+alembic = "^1.8.0"
+tenacity = "^8.0.1"
+pydantic = {extras = ["email", "dotenv"], version = "^1.9.1"}
+gunicorn = "^20.1.0"
+python-jose = {extras = ["cryptography"], version = "^3.3.0"}
+Jinja2 = "^3.1.2"
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+sqlmodel = "^0.0.6"
+python-multipart = "^0.0.5"
+requests = "^2.28.1"
+psycopg = {extras = ["binary"], version = "^3.0.15"}
+psycopg2-binary = "^2.9.3"
+watchfiles = "^0.15.0"
+
+
+
+[tool.poetry.dev-dependencies]
+pytest = "^7.1.2"
+pytest-cov = "^3.0.0"
+pytest-postgresql = "^4.1.1"
+pytest-sugar = "^0.9.5"
+pytest-icdiff = "^0.5"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
+### pydantic model parsing in PyCharm
+[tool.pydantic-pycharm-plugin.acceptable-types]
+# EmailStr field accepts str
+EmailStr = ["str"]
+
+[tool.pydantic-pycharm-plugin]
+# You can set higlith level (default is "weak_warning")
+# You can select it from "warning",  "weak_warning", "disable"
+acceptable-type-highlight = "disable"
+
