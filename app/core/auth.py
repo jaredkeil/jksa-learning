@@ -25,6 +25,17 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token")
 
 def authenticate(*, email: str, password: SecretStr, session: Session
                  ) -> Optional[User]:
+    """
+    Verify a password against the hashed password for a given email/username
+    in the database.
+
+    :param email: The email/username being authenticated
+    :param password: The password to verify for the email
+    :param session: The database session, used to retrieve hash
+    :return: If password is correct, the User object with that email.
+    If password is not correct, or email/username does not exist in database,
+     returns None.
+    """
     user: User = crud.user.get_by_email(session, email=email)
     if not user:
         return None
@@ -33,16 +44,14 @@ def authenticate(*, email: str, password: SecretStr, session: Session
     return user
 
 
-def create_access_token(*, sub: str) -> str:
-    return _create_token(
-        token_type="access_token",
-        lifetime=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
-        sub=sub,
-    )
+def create_access_token(*, subject: str) -> str:
+    """
+    Encode a subject into a JWT token that has some preset claims, using
+    secret key and algorithm from app Settings.
 
-
-def _create_token(token_type: str, lifetime: timedelta, sub: str) -> str:
-    # https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3
+    :param subject: The string, such as a username, to be encoded
+    :return: A JWT token as a string
+    """
     # The "exp" (expiration time) claim identifies the expiration time on
     # or after which the JWT MUST NOT be accepted for processing
 
@@ -52,10 +61,13 @@ def _create_token(token_type: str, lifetime: timedelta, sub: str) -> str:
     # The "sub" (subject) claim identifies the principal that is the
     # subject of the JWT
 
-    payload = {
-        'type': token_type,
-        'exp': datetime.utcnow() + lifetime,
-        'iat': datetime.utcnow(),
-        'sub': str(sub)
-    }
-    return jwt.encode(payload, settings.JWT_SECRET, settings.ALGORITHM)
+    return jwt.encode(
+        claims={
+            'type': "access_token",
+            'exp': datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+            'iat': datetime.utcnow(),
+            'sub': str(subject)
+        },
+        key=settings.JWT_SECRET,
+        algorithm=settings.ALGORITHM
+    )
