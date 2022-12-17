@@ -271,7 +271,7 @@ def test_create_goal(session):
         student_id=student.id,
         group_id=group.id,
         start_date='2022-08-01',  # type: ignore
-        end_date='2022-07-30',  # type: ignore
+        end_date='2199-07-30',  # type: ignore
         accuracy=0.80,  # type: ignore
         n_trials=5  # type: ignore
     )
@@ -376,7 +376,7 @@ def test_goal_resource_link(session):
         student_id=student.id,
         group_id=group.id,
         start_date='2022-08-01',  # type: ignore
-        end_date='2022-07-30',  # type: ignore
+        end_date='2199-07-30',  # type: ignore
         accuracy=0.80,  # type: ignore
         n_trials=5  # type: ignore
     )
