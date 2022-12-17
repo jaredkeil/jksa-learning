@@ -74,7 +74,7 @@ def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
         "username": settings.FIRST_SUPERUSER,
         "password": settings.FIRST_SUPERUSER_PW,
     }
-    r = client.post(f"/login/access-token", data=data)
+    r = client.post(f"/auth/login", data=data)
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}
@@ -85,7 +85,7 @@ def user_authentication_headers(
         *, client: TestClient, email: str, password: str
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
-    r = client.post(f"/login/access-token", data=data)
+    r = client.post(f"auth/login", data=data)
     response = r.json()
     auth_token = response["access_token"]
     headers = {"Authorization": f"Bearer {auth_token}"}

@@ -12,7 +12,7 @@ def test_auth_non_exist_user():
 
 def test_create_user_minimal(client):
     response = client.post(
-        '/signup',
+        'auth/signup',
         json={'email': 'create_user_minimal@example.com',
               'password': random_password()}
     )
@@ -29,7 +29,7 @@ def test_create_user_minimal(client):
 
 def test_create_user_all_fields(client):
     response = client.post(
-        '/signup',
+        '/auth/signup',
         json={'email': 'create_user_all_fields@example.com',
               'password': random_password(),
               'first_name': 'John',
@@ -51,7 +51,7 @@ def test_create_user_all_fields(client):
 
 def test_create_user_invalid_email(client):
     response = client.post(
-        '/signup',
+        '/auth/signup',
         json={'email': 'invalid.com',
               'password': random_password()}
     )
@@ -61,7 +61,7 @@ def test_create_user_invalid_email(client):
 
 def test_create_user_missing_password(client):
     response = client.post(
-        '/signup',
+        '/auth/signup',
         json={'email': random_email()}
     )
     pprint_dict(response.json())
@@ -71,7 +71,7 @@ def test_create_user_missing_password(client):
 
 def test_create_user_invalid_password(client):
     response = client.post(
-        '/signup',
+        '/auth/signup',
         json={'email': random_email(), 'password': 'no numbers'}
     )
     assert response.status_code == 422
@@ -81,7 +81,7 @@ def test_create_user_invalid_password(client):
 def test_create_user_duplicate(client, session):
     user = create_random_user(session)
     response = client.post(
-        '/signup',
+        '/auth/signup',
         json={'email': user.email,
               'password': random_password()}
     )
@@ -92,7 +92,7 @@ def test_login(client, session):
     user_in = UserCreate(email=random_email(), password=random_password())
     user = crud.user.create(session, obj_in=user_in)
     response = client.post(
-        '/login/access-token',
+        '/auth/login',
         data={'username': user.email,
               'password': user_in.password.get_secret_value()}
     )
@@ -106,7 +106,7 @@ def test_login_incorrect_password(client, session):
     user_in = UserCreate(email=random_email(), password=random_password())
     user = crud.user.create(session, obj_in=user_in)
     response = client.post(
-        '/login/access-token',
+        '/auth/login',
         data={'username': user.email,
               'password': user_in.password.get_secret_value()[::-1]}  # :p
     )

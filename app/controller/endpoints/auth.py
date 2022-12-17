@@ -12,7 +12,8 @@ from app.core.auth import authenticate, create_access_token
 router = APIRouter()
 
 
-@router.post("/login/access-token", response_model=deps.Token)
+# @router.post("/login", response_model=deps.Token)
+@router.post("/login")
 def login(session: Session = Depends(deps.get_session),
           form_data: OAuth2PasswordRequestForm = Depends()) -> Any:
     """
@@ -23,8 +24,9 @@ def login(session: Session = Depends(deps.get_session),
                         session=session)
     if not user:
         raise HTTPException(400, 'Incorrect username or password')
-    return {'access_token': create_access_token(sub=str(user.id)),
-            'token_type': 'bearer'}
+    return {'access_token': create_access_token(subject=str(user.id)),
+            'token_type': 'bearer',
+            'user': UserRead.from_orm(user)}
 
 
 @router.post("/signup", response_model=UserRead, status_code=201)
@@ -35,6 +37,6 @@ def create_user_signup(*, session: Session = Depends(deps.get_session),
     """
     if crud.user.get_by_email(session, email=user_in.email):
         raise HTTPException(
-                400, 'The user with this email already exists in the system'
+                400, 'A user with this email already exists.'
         )
     return crud.user.create(session, obj_in=user_in)
