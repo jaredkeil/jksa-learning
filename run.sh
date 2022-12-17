@@ -23,6 +23,6 @@ export LOG_LEVEL=
 
 #exec gunicorn --bind 0.0.0.0:8001 app.main:app -k uvicorn.workers.UvicornWorker --reload
 #exec uvicorn app.main:app --host 0.0.0.0 --port 8001 --reload
-exec uvicorn --reload --host $HOST --port $PORT --log-level debug "$APP_MODULE" --reload-exclude "test_*.py"
+exec poetry run python -m uvicorn --reload --host $HOST --port $PORT --log-level debug "$APP_MODULE" --reload-exclude "test_*.py"
 
 #exec gunicorn --bind $HOST:$PORT "$APP_MODULE" -k uvicorn.workers.UvicornWorker
