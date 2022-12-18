@@ -1,11 +1,11 @@
 from app import crud
 from app.models import Role
 
-from app.tests.tables import (
+from app.tests.tools.tables import (
     create_random_user, create_random_laps,
     create_random_goals_with_resources, create_random_attempts
 )
-from app.tests.utils import pprint_dict, authentication_token_from_email
+from app.tests.tools.utils import pprint_dict, authentication_token_from_email
 
 
 def test_create_lap(client, session):

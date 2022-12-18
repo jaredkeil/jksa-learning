@@ -3,10 +3,10 @@ from starlette import status
 from app import crud
 from app.core.config import settings
 from app.models import ResourceFormat, ResourceCreateInternal, UserRead
-from app.tests.tables import (
+from app.tests.tools.tables import (
     create_random_resource, create_random_user, create_random_standards,
     create_topics, create_random_resources)
-from app.tests.utils import random_lower_string, get_user_from_token_headers
+from app.tests.tools.utils import random_lower_string, get_user_from_token_headers
 
 """ Create """
 

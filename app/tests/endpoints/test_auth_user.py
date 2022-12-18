@@ -1,9 +1,9 @@
 from app import crud
 from app.core.config import settings
 from app.models import Role, UserCreate, UserRead
-from app.tests.tables import create_random_user
-from app.tests.utils import (get_user_from_token_headers, pprint_dict,
-                             random_email, random_password)
+from app.tests.tools.tables import create_random_user
+from app.tests.tools.utils import (get_user_from_token_headers, pprint_dict,
+                                   random_email, random_password)
 
 
 def test_auth_non_exist_user():

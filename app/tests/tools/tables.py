@@ -7,10 +7,10 @@ from app.models import (Topic, Standard, StandardCreate, User, UserCreate,
                         Resource, ResourceCreateInternal, ResourceFormat, Card,
                         CardCreate, GoalCreate, Goal, Role, UserUpdate, Group,
                         GroupCreate, Lap, LapCreate, Attempt,
-                        AttemptCreateExternal, AttemptCreateInternal)
-from app.tests.utils import (random_int, random_email, random_lower_string,
-                             random_subject, random_future_date, utc_now,
-                             random_accuracy, random_password)
+                        AttemptCreateInternal)
+from app.tests.tools.utils import (random_int, random_email, random_lower_string,
+                                   random_subject, random_future_date, utc_now,
+                                   random_accuracy, random_password)
 
 
 def create_random_user(session: Session, role: Role = None) -> User:

@@ -56,6 +56,10 @@ def utc_now() -> datetime:
     return datetime.utcnow()
 
 
+def local_today() -> datetime:
+    return datetime.today()
+
+
 def random_future_date() -> datetime:
     return datetime.utcnow() + timedelta(days=random.randint(1, 1000))
 

@@ -1,5 +1,5 @@
 from app.models import Standard, Subject
-from app.tests.tables import create_topics
+from app.tests.tools.tables import create_topics
 
 
 def test_standard_model(session):

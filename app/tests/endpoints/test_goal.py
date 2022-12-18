@@ -2,13 +2,13 @@ from app import crud
 from app.models import (
     UserRead, StandardRead, ResourceReadWithCards, Role
 )
-from app.tests.tables import (
+from app.tests.tools.tables import (
     create_random_user, create_random_standards, create_topics,
     create_random_resources, create_random_goals, create_random_cards,
     update_user, create_random_groups
 )
-from app.tests.utils import (
-    get_user_from_token_headers, pprint_dict, utc_now
+from app.tests.tools.utils import (
+    get_user_from_token_headers, pprint_dict, local_today
 )
 
 
@@ -307,7 +307,7 @@ def test_create_goal_not_future_end_date(
         'student_id': student.id,
         'standard_id': standard.id,
         'group_id': group.id,
-        'end_date': utc_now().strftime('%Y-%m-%d'),
+        'end_date': local_today().strftime('%Y-%m-%d'),
     }
     response = client.post('/goal/', json=goal_in_data,
                            headers=normal_user_token_headers)

@@ -1,12 +1,12 @@
 from app import crud
 from app.models import Role
 
-from app.tests.tables import (
+from app.tests.tools.tables import (
     create_random_user, create_random_laps,
-    create_random_goals_with_resources, create_random_attempts
+    create_random_goals_with_resources
 )
-from app.tests.utils import (pprint_dict, authentication_token_from_email,
-                             random_lower_string)
+from app.tests.tools.utils import (pprint_dict, authentication_token_from_email,
+                                   random_lower_string)
 
 
 def test_create_attempt_correct(client, session):
