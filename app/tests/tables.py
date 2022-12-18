@@ -63,8 +63,8 @@ def create_random_standards(session: Session, topic: Topic, n: int = 1
                             ) -> list[Standard] | Standard:
     """
     For a given Topic in DB, creates one or more Standards with a random grade
-     (between 1-12), random subject(Subject Enum), and random template
-     (a random string), and adds to database.
+    (between 1-12), random subject(Subject Enum), and random template
+    (a random string), and adds to database.
     """
 
     standards = []
