@@ -1,15 +1,13 @@
 from app import crud
-from app.models import (
-    UserRead, StandardRead, ResourceReadWithCards, Role
-)
-from app.tests.tools.tables import (
-    create_random_user, create_random_standards, create_topics,
-    create_random_resources, create_random_goals, create_random_cards,
-    update_user, create_random_groups
-)
-from app.tests.tools.utils import (
-    get_user_from_token_headers, pprint_dict, local_today
-)
+from app.models import (UserRead, StandardRead, ResourceReadWithCards, Role)
+from app.tests.tools.mock_data import (create_random_user,
+                                       create_random_standards, create_topics,
+                                       create_random_resources,
+                                       create_random_goals,
+                                       create_random_cards, update_user,
+                                       create_random_groups, pprint_dict)
+from app.tests.tools.mock_params import local_today
+from app.tests.tools.mock_user import get_user_from_token_headers
 
 
 def test_create_goal(client, session, normal_user_token_headers):

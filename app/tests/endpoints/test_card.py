@@ -1,9 +1,10 @@
 from app import crud
 from app.models import ResourceRead, CardRead
-from app.tests.tools.tables import (
+from app.tests.tools.mock_data import (
     create_random_user, create_random_resources, create_random_cards
 )
-from app.tests.tools.utils import random_lower_string, get_user_from_token_headers
+from app.tests.tools.mock_params import random_lower_string
+from app.tests.tools.mock_user import get_user_from_token_headers
 
 
 def test_create_card(client, session, normal_user_token_headers):

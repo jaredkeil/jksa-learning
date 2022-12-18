@@ -1,12 +1,11 @@
 from app import crud
 from app.models import Role
 
-from app.tests.tools.tables import (
-    create_random_user, create_random_laps,
-    create_random_goals_with_resources
-)
-from app.tests.tools.utils import (pprint_dict, authentication_token_from_email,
-                                   random_lower_string)
+from app.tests.tools.mock_data import (create_random_user, create_random_laps,
+                                       create_random_goals_with_resources,
+                                       pprint_dict)
+from app.tests.tools.mock_params import random_lower_string
+from app.tests.tools.mock_user import authentication_token_from_email
 
 
 def test_create_attempt_correct(client, session):

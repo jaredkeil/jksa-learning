@@ -1,5 +1,5 @@
 from app.models import Standard, Subject
-from app.tests.tools.tables import create_topics
+from app.tests.tools.mock_data import create_topics
 
 
 def test_standard_model(session):
@@ -17,5 +17,3 @@ def test_standard_model(session):
     assert standard.grade == 5
     assert standard.subject == 'math'
     assert standard.template == 'Will {} by {}'
-
-

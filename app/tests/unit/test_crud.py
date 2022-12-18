@@ -3,17 +3,21 @@ import sqlalchemy.exc
 
 from app import crud
 from app.controller.endpoints.attempt import is_correct
-from app.models import (
-    StandardCreate, Subject, ResourceCreateInternal, StandardResourceCreate,
-    GoalCreate, UserUpdate, ResourceUpdate, ResourceFormat, GroupCreate, Role,
-    LapCreate, AttemptCreateExternal, AttemptCreateInternal
-)
-from app.tests.tools.tables import (
-    create_topics, create_random_user, create_random_standards,
-    create_random_resources, create_random_groups, create_random_goals,
-    create_random_cards, create_random_goals_with_resources, create_random_laps
-)
-from app.tests.tools.utils import random_email, random_password, pprint_dict
+from app.models import (StandardCreate, Subject, ResourceCreateInternal,
+                        StandardResourceCreate, GoalCreate, UserUpdate,
+                        ResourceUpdate, ResourceFormat, GroupCreate, Role,
+                        LapCreate, AttemptCreateExternal,
+                        AttemptCreateInternal)
+from app.tests.tools.mock_data import (create_topics, create_random_user,
+                                       create_random_standards,
+                                       create_random_resources,
+                                       create_random_groups,
+                                       create_random_goals,
+                                       create_random_cards,
+                                       create_random_goals_with_resources,
+                                       create_random_laps, pprint_dict)
+from app.tests.tools.mock_params import random_email
+from app.tests.tools.mock_user import random_password
 
 
 def test_resource_user_relationship(session):

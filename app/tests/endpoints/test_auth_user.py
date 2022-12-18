@@ -1,9 +1,10 @@
 from app import crud
 from app.core.config import settings
 from app.models import Role, UserCreate, UserRead
-from app.tests.tools.tables import create_random_user
-from app.tests.tools.utils import (get_user_from_token_headers, pprint_dict,
-                                   random_email, random_password)
+from app.tests.tools.mock_data import create_random_user, pprint_dict
+from app.tests.tools.mock_params import random_email
+from app.tests.tools.mock_user import (get_user_from_token_headers,
+                                       random_password)
 
 
 def test_auth_non_exist_user():
@@ -175,7 +176,7 @@ def test_update_me_normal_user(client, session, normal_user_token_headers):
 
 
 def test_update_me_password_email_normal_user(
-    client, session, normal_user_token_headers
+        client, session, normal_user_token_headers
 ):
     user = get_user_from_token_headers(client, normal_user_token_headers)
     og_user_db = crud.user.get(session, user.id)
@@ -205,7 +206,7 @@ def test_update_me_password_email_normal_user(
 
 
 def test_update_me_invalid_password(
-    client, session, normal_user_token_headers
+        client, session, normal_user_token_headers
 ):
     response = client.patch(
         '/user/me',

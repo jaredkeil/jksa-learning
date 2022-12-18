@@ -1,3 +1,4 @@
+import json
 import random
 
 from sqlmodel import Session
@@ -8,9 +9,10 @@ from app.models import (Topic, Standard, StandardCreate, User, UserCreate,
                         CardCreate, GoalCreate, Goal, Role, UserUpdate, Group,
                         GroupCreate, Lap, LapCreate, Attempt,
                         AttemptCreateInternal)
-from app.tests.tools.utils import (random_int, random_email, random_lower_string,
-                                   random_subject, random_future_date, utc_now,
-                                   random_accuracy, random_password)
+from app.tests.tools.mock_params import (random_int, random_email,
+                                         random_lower_string, random_subject,
+                                         random_future_date, utc_now, random_accuracy,
+                                         random_password)
 
 
 def create_random_user(session: Session, role: Role = None) -> User:
@@ -38,7 +40,7 @@ def create_random_resource(session: Session, user: User) -> Resource:
     Creates a resource with random name and adds to database
     """
     resource_in = ResourceCreateInternal(name=random_lower_string(),
-                                 creator_id=user.id)
+                                         creator_id=user.id)
     return crud.resource.create(session, obj_in=resource_in)
 
 
@@ -205,8 +207,12 @@ def create_random_attempts(session: Session, lap: Lap) -> list[Attempt]:
         attempt_in = AttemptCreateInternal(submission=random_lower_string(8),
                                            lap_id=lap.id,
                                            card_id=card.id,
-                                           correct=random.choice([True, False]))
+                                           correct=random.choice(
+                                               [True, False]))
         attempt = crud.attempt.create(session, obj_in=attempt_in)
         attempts.append(attempt)
     return attempts
 
+
+def pprint_dict(json_dict: dict) -> None:
+    print(json.dumps(json_dict, indent=4, default=str))

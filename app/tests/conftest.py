@@ -1,12 +1,12 @@
 import pytest
-
 from fastapi.testclient import TestClient
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.tests.tools.utils import get_superuser_token_headers, authentication_token_from_email
 from app.core.config import settings
-from app.main import app
 from app.deps import get_session
+from app.main import app
+from app.tests.tools.mock_user import (get_superuser_token_headers,
+                                       authentication_token_from_email)
 from ..init_db import create_first_superuser
 
 HOST = 'localhost'
@@ -17,6 +17,7 @@ DB = 'app'
 
 POSTGRESQL_URL = settings.SQLALCHEMY_DATABASE_URI
 print(f'{POSTGRESQL_URL=}')
+
 
 # logging.basicConfig(level='info')
 # logger = logging.getLogger(__name__)
