@@ -14,7 +14,7 @@
 
 export APP_MODULE=${APP_MODULE-app.main:app}
 export HOST=${HOST:-0.0.0.0}
-export PORT=${PORT:-8001}  # should be routed in docker-compose.yml
+export PORT=${PORT:-8000}  # should be routed in docker-compose.yml
 export BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
 export LOG_LEVEL=
 
