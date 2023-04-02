@@ -13,7 +13,7 @@ from app.models import (
     Resource, ResourceCreateInternal, User, CardCreate,
     Card)
 
-logging.basicConfig(level=logging.info)
+logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
@@ -28,7 +28,7 @@ def create_first_superuser():
             user = crud.user.create(session, obj_in=user_in)
             crud.user.make_superuser(session, db_obj=user)
 
-        logger.debug(f'Created first superuser: {UserRead.from_orm(user)}')
+        logger.info(f'Created first superuser: {UserRead.from_orm(user)}')
         return user
 
 
@@ -116,8 +116,8 @@ def dummy_resources(session: Session, user: User) -> list[Resource]:
     return [resource1, resource2]
 
 
-def dummy_cards(session: Session, resources: list[Resource]) -> list[
-    list[Card]]:
+def dummy_cards(session: Session, resources: list[Resource]
+                ) -> list[list[Card]]:
     resources_cards = []
     for r in resources:
         card_in1 = CardCreate(question=f'{r.id}:Q 1', answer=f'{r.id}A 1',

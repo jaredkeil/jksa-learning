@@ -176,7 +176,7 @@ class UserDBBase(UserBase):
     # Users can't control these attributes from UserUpdate
     is_active: Optional[bool] = True
     is_superuser: bool = False
-    pass
+    address: Optional[str]
 
 
 class User(UserDBBase, table=True):

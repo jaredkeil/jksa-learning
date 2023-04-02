@@ -10,7 +10,7 @@ PROJECT_ROOT = ROOT.parent.parent.parent
 
 
 class Settings(BaseSettings):
-    ENVIRONMENT: str = 'local' if os.getenv('ENVIRONMENT') is not None else 'tester'
+    ENVIRONMENT: str = 'local' if os.getenv('ENVIRONMENT') is not None else 'dev'
     API_V1_STR: str = "/api/v1"
     JWT_SECRET: str = "TEST_SECRET_DO_NOT_USE_IN_PROD"
     ALGORITHM: str = "HS256"
@@ -23,7 +23,7 @@ class Settings(BaseSettings):
     # \ "http://localhost:8080", "http://local.dockertoolbox.tiangolo.com"]'
     BACKEND_CORS_ORIGINS: list[AnyHttpUrl] = [
         "http://localhost:3000",
-        "http://localhost:8001",  # type: ignore
+        "http://localhost:8001",
     ]
 
     # Origins that match this regex OR are in the above list are allowed
@@ -46,6 +46,7 @@ class Settings(BaseSettings):
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
     def assemble_db_connection(cls, v: Optional[str], values: dict[str, Any]
                                ) -> Any:
+        # print('assembling db connection')
         if isinstance(v, str):
             return v
         return PostgresDsn.build(
@@ -61,6 +62,7 @@ class Settings(BaseSettings):
     EMAIL_TEST_USER: EmailStr = "test@example.com"
 
     class Config:
+        # Useful for local development
         case_sensitive = True
         # env_file = "../../.env"
         env_file = PROJECT_ROOT / '.env'
