@@ -24,27 +24,25 @@ psycopg2-binary = "^2.9.5"
 watchfiles = "^0.19.0"
 httpx = "^0.23.1"
 
-
-
-[tool.poetry.dev-dependencies]
+[tool.poetry.group.dev.dependencies]
 pytest = "^7.2.0"
 pytest-cov = "^4.0.0"
 pytest-postgresql = "^4.1.1"
 pytest-sugar = "^0.9.6"
 pytest-icdiff = "^0.6"
+black = "^23.3.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-
 ### pydantic model parsing in PyCharm
 [tool.pydantic-pycharm-plugin.acceptable-types]
-# EmailStr field accepts str
+# Allow EmailStr field to accept str
 EmailStr = ["str"]
 
 [tool.pydantic-pycharm-plugin]
-# You can set higlith level (default is "weak_warning")
+# You can set highlight level (default is "weak_warning")
 # You can select it from "warning",  "weak_warning", "disable"
 acceptable-type-highlight = "disable"
 

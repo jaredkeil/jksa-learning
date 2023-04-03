@@ -7,21 +7,10 @@ from app.deps import get_session
 from app.main import app
 from app.tests.tools.mock_user import (get_superuser_token_headers,
                                        authentication_token_from_email)
-from ..initial_data import create_first_superuser
-
-HOST = 'localhost'
-PORT = '5432'
-USER = 'postgres'
-PW = 'password'
-DB = 'app'
+from app.initial_data import create_first_superuser
 
 POSTGRESQL_URL = settings.SQLALCHEMY_DATABASE_URI
 print(f'{POSTGRESQL_URL=}')
-
-
-# logging.basicConfig(level='info')
-# logger = logging.getLogger(__name__)
-# logger.setLevel(logging.WARNING)
 
 
 @pytest.fixture(scope="session")
@@ -31,7 +20,7 @@ def engine():
 
 @pytest.fixture(scope="session")
 def tables(engine):
-    SQLModel.metadata.drop_all(engine)  # in case final drop_all failed
+    SQLModel.metadata.drop_all(engine)  # in case final drop_all failed in previous test session
     SQLModel.metadata.create_all(engine)
     create_first_superuser()
     yield
@@ -47,7 +36,7 @@ def session_fixture(engine, tables):
             transaction.rollback()
 
 
-@pytest.fixture(name='client')
+@pytest.fixture(name='client', scope='function')
 def client_fixture(session: Session):
     def get_session_override():
         return session
