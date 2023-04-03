@@ -2,6 +2,7 @@ import logging
 from typing import Iterable
 
 from sqlalchemy import Table
+from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel, create_engine
 
 from app.core.config import settings
@@ -10,9 +11,11 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 engine = create_engine(url=settings.SQLALCHEMY_DATABASE_URI, echo=False)
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
 def create_db_and_tables():
+    # Only use if not using Alembic migrations
     env = settings.ENVIRONMENT
     logger.info(f'{env=}')
 

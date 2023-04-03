@@ -7,7 +7,7 @@ from app.deps import get_session
 from app.main import app
 from app.tests.tools.mock_user import (get_superuser_token_headers,
                                        authentication_token_from_email)
-from ..init_data import create_first_superuser
+from ..initial_data import create_first_superuser
 
 HOST = 'localhost'
 PORT = '5432'

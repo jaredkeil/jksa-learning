@@ -21,14 +21,16 @@ def create_first_superuser():
     with Session(engine) as session:
         user = crud.user.get_by_email(session, email=settings.FIRST_SUPERUSER)
         if not user:
+            logger.info('Superuser not found. Trying to create...')
             user_in = UserCreate(
                 email=settings.FIRST_SUPERUSER,
                 password=settings.FIRST_SUPERUSER_PW,
             )
             user = crud.user.create(session, obj_in=user_in)
             crud.user.make_superuser(session, db_obj=user)
-
-        logger.info(f'Created first superuser: {UserRead.from_orm(user)}')
+            logger.info(f'Created superuser: {UserRead.from_orm(user)}')
+        else:
+            logger.info(f'Superuser already exists: {UserRead.from_orm(user)}')
         return user
 
 
@@ -131,3 +133,9 @@ def dummy_cards(session: Session, resources: list[Resource]
         card3 = crud.card.create(session, obj_in=card_in3)
         resources_cards.append([card1, card2, card3])
     return resources_cards
+
+
+if __name__ == '__main__':
+    superuser = create_first_superuser()
+    if settings.ENVIRONMENT == 'dev':
+        dummy_data(superuser)

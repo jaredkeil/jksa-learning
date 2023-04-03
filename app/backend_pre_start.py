@@ -3,6 +3,8 @@ import logging
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 from sqlmodel import Session, select
 
+from app.database import SessionLocal
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -18,10 +20,10 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        session = Session()
-        session.exec(select())
+        session = SessionLocal()
         # Try to create session to check if DB is awake
         session.execute("SELECT 1")
+        session.close()
     except Exception as e:
         logger.error(e)
         raise e
