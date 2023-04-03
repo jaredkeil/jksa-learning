@@ -31,9 +31,8 @@ $ docker compose exec web poetry run alembic check
 ```
 
 #### CI/CD
-RUN chmod +x prestart.sh
 
 Run pytests in docker
 ```
-docker compose exec web poetry run pytest
+docker compose exec web poetry run ./scripts/run_pytest.sh
 ```
