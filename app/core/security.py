@@ -4,15 +4,14 @@ from pydantic import SecretStr
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def verify_password(plain_password: SecretStr,
-                    hashed_password: SecretStr) -> bool:
+def verify_password(plain_password: SecretStr, hashed_password: SecretStr) -> bool:
     """
     Verify a plain text password against a hash, based on the app's
     CryptoContext algorithm.
     """
     return password_context.verify(
         secret=plain_password.get_secret_value(),
-        hash=hashed_password.get_secret_value()
+        hash=hashed_password.get_secret_value(),
     )
 
 

@@ -11,10 +11,7 @@ from app.core.config import settings
 from app.core.security import verify_password
 from app.models import User
 
-JWTPayloadMapping = MutableMapping[
-    str,
-    (datetime | bool | str | list[str] | list[int])
-]
+JWTPayloadMapping = MutableMapping[str, (datetime | bool | str | list[str] | list[int])]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token")
 
@@ -23,8 +20,9 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token")
 # )
 
 
-def authenticate(*, email: str, password: SecretStr, session: Session
-                 ) -> Optional[User]:
+def authenticate(
+    *, email: str, password: SecretStr, session: Session
+) -> Optional[User]:
     """
     Verify a password against the hashed password for a given email/username
     in the database.
@@ -63,11 +61,12 @@ def create_access_token(*, subject: str) -> str:
 
     return jwt.encode(
         claims={
-            'type': "access_token",
-            'exp': datetime.utcnow() + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
-            'iat': datetime.utcnow(),
-            'sub': str(subject)
+            "type": "access_token",
+            "exp": datetime.utcnow()
+            + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+            "iat": datetime.utcnow(),
+            "sub": str(subject),
         },
         key=settings.JWT_SECRET,
-        algorithm=settings.ALGORITHM
+        algorithm=settings.ALGORITHM,
     )

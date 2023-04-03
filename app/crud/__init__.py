@@ -9,4 +9,3 @@ from .crud_goal_resource import goal_resource
 from .crud_group import group
 from .crud_lap import lap
 from .crud_attempt import attempt
-

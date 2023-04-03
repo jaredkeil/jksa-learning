@@ -10,7 +10,7 @@ PROJECT_ROOT = ROOT.parent.parent.parent
 
 
 class Settings(BaseSettings):
-    ENVIRONMENT: str = 'local' if os.getenv('ENVIRONMENT') is not None else 'dev'
+    ENVIRONMENT: str = "local" if os.getenv("ENVIRONMENT") is not None else "dev"
     API_V1_STR: str = "/api/v1"
     JWT_SECRET: str = "TEST_SECRET_DO_NOT_USE_IN_PROD"
     ALGORITHM: str = "HS256"
@@ -44,8 +44,7 @@ class Settings(BaseSettings):
     SQLALCHEMY_DATABASE_URI: Optional[PostgresDsn] = None
 
     @validator("SQLALCHEMY_DATABASE_URI", pre=True)
-    def assemble_db_connection(cls, v: Optional[str], values: dict[str, Any]
-                               ) -> Any:
+    def assemble_db_connection(cls, v: Optional[str], values: dict[str, Any]) -> Any:
         # print('assembling db connection')
         if isinstance(v, str):
             return v
@@ -53,7 +52,9 @@ class Settings(BaseSettings):
             scheme="postgresql",
             user=values.get("POSTGRES_USER"),
             password=values.get("POSTGRES_PASSWORD"),
-            host=values.get("POSTGRES_SERVER") if os.getenv('ENVIRONMENT') else "localhost",
+            host=values.get("POSTGRES_SERVER")
+            if os.getenv("ENVIRONMENT")
+            else "localhost",
             path=f"/{values.get('POSTGRES_DB') or ''}",
         )
 
@@ -65,7 +66,7 @@ class Settings(BaseSettings):
         # Useful for local development
         case_sensitive = True
         # env_file = "../../.env"
-        env_file = PROJECT_ROOT / '.env'
+        env_file = PROJECT_ROOT / ".env"
 
 
 settings = Settings()

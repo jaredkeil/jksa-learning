@@ -1,5 +1,3 @@
-
-
 def test_valid_cors_origin():
     pass
 

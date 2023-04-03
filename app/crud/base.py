@@ -1,5 +1,4 @@
-from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, \
-    Sequence
+from typing import Any, Dict, Generic, List, Optional, Type, TypeVar, Union, Sequence
 
 from fastapi.encoders import jsonable_encoder
 from sqlmodel import Session, SQLModel, select
@@ -19,44 +18,24 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         """
         self.model = model
 
-    def get(
-            self,
-            session: Session,
-            _id: Any
-    ) -> Optional[ModelType]:
+    def get(self, session: Session, _id: Any) -> Optional[ModelType]:
         return session.get(self.model, _id)
 
-    def get_mult_by_ids(
-            self,
-            session: Session,
-            ids: Sequence[int]
-    ) -> list[ModelType]:
-        return session.exec(
-            select(self.model)
-            .where(self.model.id.in_(ids))
-        ).all()
+    def get_mult_by_ids(self, session: Session, ids: Sequence[int]) -> list[ModelType]:
+        return session.exec(select(self.model).where(self.model.id.in_(ids))).all()
 
     def get_multi(
-            self,
-            session: Session,
-            *,
-            skip: int = 0,
-            limit: int = 5000
+        self, session: Session, *, skip: int = 0, limit: int = 5000
     ) -> List[ModelType]:
-        stmt = (
-            select(self.model)
-            .order_by(self.model.id)
-            .offset(skip)
-            .limit(limit)
-        )
+        stmt = select(self.model).order_by(self.model.id).offset(skip).limit(limit)
         return session.exec(stmt).all()
 
     def create(
-            self,
-            session: Session,
-            *,
-            obj_in: CreateSchemaType,
-            extras: Optional[dict[str, Any]] = None
+        self,
+        session: Session,
+        *,
+        obj_in: CreateSchemaType,
+        extras: Optional[dict[str, Any]] = None
     ) -> ModelType:
         db_obj = self.model.from_orm(obj_in, update=extras)
         session.add(db_obj)
@@ -66,10 +45,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
 
     @staticmethod
     def update(
-            session: Session,
-            *,
-            db_obj: ModelType,
-            obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+        session: Session,
+        *,
+        db_obj: ModelType,
+        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):
@@ -84,19 +63,14 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session.refresh(db_obj)
         return db_obj
 
-    def remove(
-            self,
-            session: Session,
-            *, _id: int
-    ) -> ModelType:
+    def remove(self, session: Session, *, _id: int) -> ModelType:
         obj = session.get(self.model, _id)
         session.delete(obj)
         session.commit()
         return obj
 
     @staticmethod
-    def refresh(session: Session, db_obj: ModelType
-                ) -> ModelType:
+    def refresh(session: Session, db_obj: ModelType) -> ModelType:
         """Add, commit, and refresh object in Session"""
         session.add(db_obj)
         session.commit()

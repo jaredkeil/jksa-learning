@@ -1,13 +1,23 @@
 import enum
 from datetime import date, datetime
-from typing import Optional
+from typing import Optional, Self
 
 from pydantic import (
-    EmailStr, FutureDate, PositiveFloat, PositiveInt, SecretStr, validator,
-    BaseModel
+    EmailStr,
+    FutureDate,
+    PositiveFloat,
+    PositiveInt,
+    SecretStr,
+    validator,
+    BaseModel,
 )
-from sqlalchemy import (Column, String, TypeDecorator, ForeignKeyConstraint,
-                        UniqueConstraint)
+from sqlalchemy import (
+    Column,
+    String,
+    TypeDecorator,
+    ForeignKeyConstraint,
+    UniqueConstraint,
+)
 from sqlmodel import SQLModel, Field, Relationship
 
 """
@@ -16,12 +26,12 @@ Junction Standard<>Resource
 
 
 class StandardResourceBase(SQLModel):
-    standard_id: int = Field(foreign_key='standard.id', primary_key=True)
-    resource_id: int = Field(foreign_key='resource.id', primary_key=True)
+    standard_id: int = Field(foreign_key="standard.id", primary_key=True)
+    resource_id: int = Field(foreign_key="resource.id", primary_key=True)
 
 
 class StandardResource(StandardResourceBase, table=True):
-    __tablename__ = 'standard_resource'
+    __tablename__ = "standard_resource"
 
 
 class StandardResourceCreate(StandardResourceBase):
@@ -46,13 +56,15 @@ to different goals.
 
 
 class GoalResourceBase(SQLModel):
-    goal_id: int = Field(foreign_key='goal.id', primary_key=True)
-    resource_id: int = Field(foreign_key='resource.id', primary_key=True, nullable=False)
+    goal_id: int = Field(foreign_key="goal.id", primary_key=True)
+    resource_id: int = Field(
+        foreign_key="resource.id", primary_key=True, nullable=False
+    )
 
 
 class GoalResource(GoalResourceBase, table=True):
-    __tablename__ = 'goal_resource'
-    laps: list['Lap'] = Relationship(back_populates='goal_resource')
+    __tablename__ = "goal_resource"
+    laps: list["Lap"] = Relationship(back_populates="goal_resource")
 
 
 class GoalResourceCreate(GoalResourceBase):
@@ -78,12 +90,12 @@ multiple classes/groups of students)
 
 
 class UserGroupBase(SQLModel):
-    user_id: int = Field(foreign_key='users.id', primary_key=True)
-    group_id: int = Field(foreign_key='group.id', primary_key=True)
+    user_id: int = Field(foreign_key="users.id", primary_key=True)
+    group_id: int = Field(foreign_key="group.id", primary_key=True)
 
 
 class UserGroup(UserGroupBase, table=True):
-    __tablename__ = 'user_group'
+    __tablename__ = "user_group"
 
 
 class UserGroupCreate(UserGroupBase):
@@ -101,9 +113,7 @@ class GroupBase(SQLModel):
 
 class Group(GroupBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    users: list['User'] = Relationship(
-        back_populates='groups', link_model=UserGroup
-    )
+    users: list["User"] = Relationship(back_populates="groups", link_model=UserGroup)
 
 
 class GroupCreate(GroupBase):
@@ -128,6 +138,7 @@ class SecretStrSqL(TypeDecorator):
     Get string value of SecretStr on the way in to db, and put value back
     into SecretStr on the way out. Useful for hashed passwords.
     """
+
     impl = String
     cache_ok = True
 
@@ -137,7 +148,7 @@ class SecretStrSqL(TypeDecorator):
     def process_result_value(self, value: str, dialect) -> SecretStr:
         return SecretStr(value)
 
-    def copy(self, **kw):
+    def copy(self, **kw) -> Self:
         return SecretStrSqL(self.impl.length)
 
 
@@ -146,25 +157,24 @@ def password_check(pw: SecretStr) -> SecretStr | None:
         return pw
     errors: list[str] = []
     if (min_len := 8) > len(pw):
-        errors.append(f'Password shorter than {min_len} characters.')
+        errors.append(f"Password shorter than {min_len} characters.")
     if not any(c.isdigit() for c in pw.get_secret_value()):
-        errors.append('Password needs at least one digit.')
+        errors.append("Password needs at least one digit.")
     if not any(c.isalpha() for c in pw.get_secret_value()):
-        errors.append('Password needs at least one letter.')
+        errors.append("Password needs at least one letter.")
     if errors:
-        raise ValueError(' '.join(errors))
+        raise ValueError(" ".join(errors))
     return pw
 
 
 class Role(str, enum.Enum):
-    teacher = 'teacher'
-    student = 'student'
+    teacher = "teacher"
+    student = "student"
 
 
 class UserBase(SQLModel):
     email: Optional[EmailStr] = Field(
-        default=None,
-        sa_column=Column("email", String, unique=True, index=True)
+        default=None, sa_column=Column("email", String, unique=True, index=True)
     )
     first_name: Optional[str]
     last_name: Optional[str]
@@ -180,19 +190,16 @@ class UserDBBase(UserBase):
 
 
 class User(UserDBBase, table=True):
-    __tablename__ = 'users'
+    __tablename__ = "users"
     id: Optional[int] = Field(default=None, primary_key=True)
-    hashed_password: Optional[SecretStr] = Field(
-        sa_column=Column(SecretStrSqL))
-    resources: list['Resource'] = Relationship(back_populates='creator')
-    groups: list[Group] = Relationship(
-        back_populates='users', link_model=UserGroup
-    )
+    hashed_password: Optional[SecretStr] = Field(sa_column=Column(SecretStrSqL))
+    resources: list["Resource"] = Relationship(back_populates="creator")
+    groups: list[Group] = Relationship(back_populates="users", link_model=UserGroup)
 
 
 class UserCreate(UserBase):
     password: SecretStr
-    _password_check = validator('password', allow_reuse=True)(password_check)
+    _password_check = validator("password", allow_reuse=True)(password_check)
 
 
 class UserUpdateBase(BaseModel):
@@ -201,6 +208,7 @@ class UserUpdateBase(BaseModel):
     SQLModel.dict(exclude_unset=True) is basically broken.
     https://github.com/tiangolo/sqlmodel/issues/87#issuecomment-965138135
     """
+
     email: Optional[EmailStr]
     first_name: Optional[str] = Field(default=None)
     last_name: Optional[str]
@@ -210,7 +218,7 @@ class UserUpdateBase(BaseModel):
 
 
 class UserUpdate(UserUpdateBase):
-    _password_check = validator('password', allow_reuse=True)(password_check)
+    _password_check = validator("password", allow_reuse=True)(password_check)
 
 
 class UserRead(UserBase):
@@ -224,8 +232,8 @@ Resources
 
 
 class ResourceFormat(str, enum.Enum):
-    flashcard = 'flashcard'
-    pdf = 'pdf'
+    flashcard = "flashcard"
+    pdf = "pdf"
 
 
 class ResourceBase(SQLModel):
@@ -236,14 +244,15 @@ class ResourceBase(SQLModel):
 
 class Resource(ResourceBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    creator_id: Optional[int] = Field(default=None, foreign_key='users.id')
-    creator: Optional[User] = Relationship(back_populates='resources')
-    standards: list['Standard'] = Relationship(
-        back_populates='resources',link_model=StandardResource,
+    creator_id: Optional[int] = Field(default=None, foreign_key="users.id")
+    creator: Optional[User] = Relationship(back_populates="resources")
+    standards: list["Standard"] = Relationship(
+        back_populates="resources",
+        link_model=StandardResource,
     )
-    cards: list['Card'] = Relationship(back_populates='resource')
-    goals: list['Goal'] = Relationship(
-        back_populates='resources', link_model=GoalResource
+    cards: list["Card"] = Relationship(back_populates="resource")
+    goals: list["Goal"] = Relationship(
+        back_populates="resources", link_model=GoalResource
     )
 
 
@@ -269,7 +278,7 @@ class ResourceReadWithCreator(ResourceRead):
 
 class ResourceReadMultiWithCreator(SQLModel):
     resources: list[ResourceRead] = Field(
-        default=[], exclude={'__all__': {'creator_id'}}
+        default=[], exclude={"__all__": {"creator_id"}}
     )
     creator: Optional[UserRead]
 
@@ -289,12 +298,13 @@ class CardBase(SQLModel):
 
 
 class Card(CardBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True,
-                              sa_column_kwargs=dict(autoincrement=True))
-    resource_id: Optional[int] = Field(default=None, foreign_key='resource.id')
-    resource: Resource = Relationship(back_populates='cards')
+    id: Optional[int] = Field(
+        default=None, primary_key=True, sa_column_kwargs=dict(autoincrement=True)
+    )
+    resource_id: Optional[int] = Field(default=None, foreign_key="resource.id")
+    resource: Resource = Relationship(back_populates="cards")
     # attempts: list['Attempt'] = Relationship(back_populates='card')
-    __table_args__ = (UniqueConstraint('id', 'resource_id'),)
+    __table_args__ = (UniqueConstraint("id", "resource_id"),)
 
 
 class CardCreate(CardBase):
@@ -323,8 +333,8 @@ Standards
 
 
 class Subject(str, enum.Enum):
-    math = 'math'
-    ela = 'ela'
+    math = "math"
+    ela = "ela"
 
 
 class TopicBase(SQLModel):
@@ -333,7 +343,7 @@ class TopicBase(SQLModel):
 
 class Topic(TopicBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    standards: list['Standard'] = Relationship(back_populates='topic')
+    standards: list["Standard"] = Relationship(back_populates="topic")
 
 
 class TopicCreate(TopicBase):
@@ -356,12 +366,12 @@ class StandardBase(SQLModel):
 
 class Standard(StandardBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    topic_id: int = Field(foreign_key='topic.id')
-    topic: Topic = Relationship(back_populates='standards')
-    resources: list['Resource'] = Relationship(
-        back_populates='standards', link_model=StandardResource
+    topic_id: int = Field(foreign_key="topic.id")
+    topic: Topic = Relationship(back_populates="standards")
+    resources: list["Resource"] = Relationship(
+        back_populates="standards", link_model=StandardResource
     )
-    goals: list['Goal'] = Relationship(back_populates='standard')
+    goals: list["Goal"] = Relationship(back_populates="standard")
 
 
 class StandardCreate(StandardBase):
@@ -391,27 +401,28 @@ class GoalBase(SQLModel):
     accuracy: Optional[PositiveFloat]
     n_trials: Optional[PositiveInt]
 
-    @validator('accuracy')
+    @validator("accuracy")
     def accuracy_le_100(cls, v):
         if v and v > 100:
-            raise ValueError('accuracy cannot be great than 100.')
+            raise ValueError("accuracy cannot be great than 100.")
         return v
 
 
 class Goal(GoalBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
-    teacher_id: Optional[int] = Field(foreign_key='users.id')
-    student_id: Optional[int] = Field(foreign_key='users.id')
-    standard_id: Optional[int] = Field(foreign_key='standard.id')
+    teacher_id: Optional[int] = Field(foreign_key="users.id")
+    student_id: Optional[int] = Field(foreign_key="users.id")
+    standard_id: Optional[int] = Field(foreign_key="standard.id")
     teacher: User = Relationship(
-        sa_relationship_kwargs=dict(foreign_keys='[Goal.teacher_id]')
+        sa_relationship_kwargs=dict(foreign_keys="[Goal.teacher_id]")
     )
     student: User = Relationship(
-        sa_relationship_kwargs=dict(foreign_keys='[Goal.student_id]')
+        sa_relationship_kwargs=dict(foreign_keys="[Goal.student_id]")
     )
-    standard: Standard = Relationship(back_populates='goals')
+    standard: Standard = Relationship(back_populates="goals")
     resources: list[Resource] = Relationship(
-        back_populates='goals', link_model=GoalResource,
+        back_populates="goals",
+        link_model=GoalResource,
         # sa_relationship_kwargs=dict(passive_deletes='all')
     )
 
@@ -450,28 +461,29 @@ class LapBase(SQLModel):
 
 
 class Lap(LapBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True,
-                              sa_column_kwargs=dict(autoincrement=True))
+    id: Optional[int] = Field(
+        default=None, primary_key=True, sa_column_kwargs=dict(autoincrement=True)
+    )
     goal_id: Optional[int] = Field(default=None)  # part of composite FK
     resource_id: Optional[int] = Field(default=None)  # part of composite FK
-    goal_resource: GoalResource = Relationship(back_populates='laps')
+    goal_resource: GoalResource = Relationship(back_populates="laps")
     goal: Goal = Relationship(
         sa_relationship_kwargs=dict(
-            primaryjoin='foreign(Lap.goal_id)==Goal.id',
-            viewonly=True
+            primaryjoin="foreign(Lap.goal_id)==Goal.id", viewonly=True
         )
     )
     resource: Resource = Relationship(
         sa_relationship_kwargs=dict(
-            primaryjoin='foreign(Lap.resource_id)==Resource.id',
-            viewonly=True
+            primaryjoin="foreign(Lap.resource_id)==Resource.id", viewonly=True
         )
     )
-    attempts: list['Attempt'] = Relationship(back_populates='lap')
+    attempts: list["Attempt"] = Relationship(back_populates="lap")
 
-    __table_args__ = (ForeignKeyConstraint(
-        ['goal_id', 'resource_id'],
-        ['goal_resource.goal_id', 'goal_resource.resource_id']),
+    __table_args__ = (
+        ForeignKeyConstraint(
+            ["goal_id", "resource_id"],
+            ["goal_resource.goal_id", "goal_resource.resource_id"],
+        ),
     )  # makes a goal resource un-deletable unless not in use on lap.
 
 
@@ -506,16 +518,17 @@ class AttemptBase(SQLModel):
 
 
 class Attempt(AttemptBase, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True,
-                              sa_column_kwargs=dict(autoincrement=True))
-    lap_id: Optional[int] = Field(default=None, primary_key=True,
-                                  foreign_key='lap.id')
-    card_id: Optional[int] = Field(default=None, primary_key=True,
-                                   foreign_key='card.id')
+    id: Optional[int] = Field(
+        default=None, primary_key=True, sa_column_kwargs=dict(autoincrement=True)
+    )
+    lap_id: Optional[int] = Field(default=None, primary_key=True, foreign_key="lap.id")
+    card_id: Optional[int] = Field(
+        default=None, primary_key=True, foreign_key="card.id"
+    )
     correct: Optional[bool]  # validated on attempt post
-    lap: 'Lap' = Relationship(back_populates='attempts')
-    card: 'Card' = Relationship(
-        sa_relationship_kwargs=dict(primaryjoin='Attempt.card_id==Card.id')
+    lap: "Lap" = Relationship(back_populates="attempts")
+    card: "Card" = Relationship(
+        sa_relationship_kwargs=dict(primaryjoin="Attempt.card_id==Card.id")
     )
 
 

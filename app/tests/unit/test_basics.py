@@ -29,6 +29,3 @@ def test_current_active_superuser_dep_not_superuser():
 
 
 """ other stuff """
-
-
-

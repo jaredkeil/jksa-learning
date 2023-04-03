@@ -3,26 +3,40 @@ import sqlalchemy.exc
 
 from app import crud
 from app.controller.endpoints.attempt import is_correct
-from app.models import (StandardCreate, Subject, ResourceCreateInternal,
-                        StandardResourceCreate, GoalCreate, UserUpdate,
-                        ResourceUpdate, ResourceFormat, GroupCreate, Role,
-                        LapCreate, AttemptCreateExternal,
-                        AttemptCreateInternal)
-from app.tests.tools.mock_data import (create_topics, create_random_user,
-                                       create_random_standards,
-                                       create_random_resources,
-                                       create_random_groups,
-                                       create_random_goals,
-                                       create_random_cards,
-                                       create_random_goals_with_resources,
-                                       create_random_laps, pprint_dict)
+from app.models import (
+    StandardCreate,
+    Subject,
+    ResourceCreateInternal,
+    StandardResourceCreate,
+    GoalCreate,
+    UserUpdate,
+    ResourceUpdate,
+    ResourceFormat,
+    GroupCreate,
+    Role,
+    LapCreate,
+    AttemptCreateExternal,
+    AttemptCreateInternal,
+)
+from app.tests.tools.mock_data import (
+    create_topics,
+    create_random_user,
+    create_random_standards,
+    create_random_resources,
+    create_random_groups,
+    create_random_goals,
+    create_random_cards,
+    create_random_goals_with_resources,
+    create_random_laps,
+    pprint_dict,
+)
 from app.tests.tools.mock_params import random_email
 from app.tests.tools.mock_user import random_password
 
 
 def test_resource_user_relationship(session):
     user = create_random_user(session)
-    resource_in = ResourceCreateInternal(creator_id=user.id, name='new one')
+    resource_in = ResourceCreateInternal(creator_id=user.id, name="new one")
     resource = crud.resource.create(session, obj_in=resource_in)
     assert resource.creator == user
 
@@ -36,13 +50,14 @@ def test_resource_remove(session):
 
 def test_standard_create(session):
     topic = create_topics(session, 1)
-    standard_in = StandardCreate(grade=1, subject=Subject.ela,
-                                 topic_id=topic.id, template='test')
+    standard_in = StandardCreate(
+        grade=1, subject=Subject.ela, topic_id=topic.id, template="test"
+    )
     standard = crud.standard.create(session, obj_in=standard_in)
     assert standard.topic == topic
     assert standard.grade == 1
-    assert standard.subject == 'ela'
-    assert standard.template == 'test'
+    assert standard.subject == "ela"
+    assert standard.template == "test"
 
 
 def test_topic_standards(session):
@@ -60,9 +75,12 @@ def test_standard_create_multiple_per_topic(session):
     for i, topic in enumerate(topic_list):
         created_standards = []
         for j in range(n_standards_per_topic):
-            standard_in = StandardCreate(grade=5, subject=Subject.ela,
-                                         topic_id=topic.id,
-                                         template=f'topic {i} - standard {j}')
+            standard_in = StandardCreate(
+                grade=5,
+                subject=Subject.ela,
+                topic_id=topic.id,
+                template=f"topic {i} - standard {j}",
+            )
             standard = crud.standard.create(session, obj_in=standard_in)
             assert standard.topic == topic
             created_standards.append(standard)
@@ -71,16 +89,18 @@ def test_standard_create_multiple_per_topic(session):
 
 def test_standard_resources(session):
     topic = create_topics(session, 1)
-    standard_in = StandardCreate(grade=4, subject=Subject.math,
-                                 topic_id=topic.id, template='standard')
+    standard_in = StandardCreate(
+        grade=4, subject=Subject.math, topic_id=topic.id, template="standard"
+    )
     standard = crud.standard.create(session, obj_in=standard_in)
 
     user = create_random_user(session)
-    resource_in = ResourceCreateInternal(name='1', creator_id=user.id)
+    resource_in = ResourceCreateInternal(name="1", creator_id=user.id)
     resource = crud.resource.create(session, obj_in=resource_in)
 
-    std_rsc_in = StandardResourceCreate(standard_id=standard.id,
-                                        resource_id=resource.id)
+    std_rsc_in = StandardResourceCreate(
+        standard_id=standard.id, resource_id=resource.id
+    )
     _ = crud.standard_resource.create(session, obj_in=std_rsc_in)
 
     assert len(standard.resources) == 1
@@ -119,15 +139,21 @@ def test_standard_resources_multiple(session):
 
     # assign first standard both resources
     for resource in resources:
-        crud.standard_resource.create(session, obj_in=StandardResourceCreate(
-            standard_id=standards[0].id,
-            resource_id=resource.id))
+        crud.standard_resource.create(
+            session,
+            obj_in=StandardResourceCreate(
+                standard_id=standards[0].id, resource_id=resource.id
+            ),
+        )
 
     # assign second standard one resource
     # now that resource will relate to two standards
-    crud.standard_resource.create(session, obj_in=StandardResourceCreate(
-        standard_id=standards[1].id,
-        resource_id=resources[1].id))
+    crud.standard_resource.create(
+        session,
+        obj_in=StandardResourceCreate(
+            standard_id=standards[1].id, resource_id=resources[1].id
+        ),
+    )
 
     assert len(standards[0].resources) == 2
     assert len(standards[1].resources) == 1
@@ -148,10 +174,8 @@ def test_resource_multi_standard_private(session):
     assert user1.id != user2.id
     # some resources will be private, some public. Generating enough for
     # probability's sake we will pass include_public=False to crud.
-    user1_resources = create_random_resources(session, user1, 100,
-                                              all_private=False)
-    user2_resources = create_random_resources(session, user2, 100,
-                                              all_private=False)
+    user1_resources = create_random_resources(session, user1, 100, all_private=False)
+    user2_resources = create_random_resources(session, user2, 100, all_private=False)
 
     topic = create_topics(session, 1)
     standard1 = create_random_standards(session, topic, 1)
@@ -171,10 +195,9 @@ def test_resource_multi_standard_private(session):
     # Some of our resources are private, but since they are ours, we
     # should still get them
 
-    ret_resources = crud.resource.get_multi_by_standard(session,
-                                                        user1.id,
-                                                        standard1.id,
-                                                        include_public=False)
+    ret_resources = crud.resource.get_multi_by_standard(
+        session, user1.id, standard1.id, include_public=False
+    )
 
     assert ret_resources == user1_resources[:60]
     assert not all(r.private for r in ret_resources)
@@ -187,13 +210,15 @@ def test_resource_multi_standard_public(session):
     user1 = create_random_user(session)
     user2 = create_random_user(session)
 
-    user1_resources = create_random_resources(session, user1, n_total,
-                                              all_private=False)
+    user1_resources = create_random_resources(
+        session, user1, n_total, all_private=False
+    )
     assert any(r.private for r in user1_resources)
     assert any(not r.private for r in user1_resources)
 
-    user2_resources = create_random_resources(session, user2, n_total,
-                                              all_private=False)
+    user2_resources = create_random_resources(
+        session, user2, n_total, all_private=False
+    )
     assert any(r.private for r in user2_resources)
     assert any(not r.private for r in user2_resources)
 
@@ -207,18 +232,16 @@ def test_resource_multi_standard_public(session):
     standard1.resources.extend(user2_resources[:n_add])
 
     # put some of user1's resources on a different standard
-    standard2.resources.extend(user1_resources[n_total - n_other_std:])
+    standard2.resources.extend(user1_resources[n_total - n_other_std :])
 
-    ret_resources = crud.resource.get_multi_by_standard(session,
-                                                        user1.id,
-                                                        standard1.id,
-                                                        include_public=True)
+    ret_resources = crud.resource.get_multi_by_standard(
+        session, user1.id, standard1.id, include_public=True
+    )
 
     print(ret_resources)
 
     # these are the public resources that user2 added to the standard
-    user2_public_std_resources = [r for r in user2_resources[:n_add] if
-                                  not r.private]
+    user2_public_std_resources = [r for r in user2_resources[:n_add] if not r.private]
     assert all([r in standard1.resources for r in user2_public_std_resources])
     assert all(r in ret_resources for r in user2_public_std_resources)
     assert any(r.creator_id == user2.id for r in ret_resources)
@@ -273,10 +296,10 @@ def test_create_goal(session):
         teacher_id=teacher.id,
         student_id=student.id,
         group_id=group.id,
-        start_date='2022-08-01',  # type: ignore
-        end_date='2199-07-30',  # type: ignore
+        start_date="2022-08-01",  # type: ignore
+        end_date="2199-07-30",  # type: ignore
         accuracy=0.80,  # type: ignore
-        n_trials=5  # type: ignore
+        n_trials=5,  # type: ignore
     )
     goal = crud.goal.create(session, obj_in=goal_in)
     assert goal.teacher == teacher
@@ -289,20 +312,19 @@ def test_create_goal(session):
 def test_update(session):
     # for object that directly inherits from CRUDBase
     user = create_random_user(session)
-    resource_in1 = ResourceCreateInternal(name='og', private=True,
-                                          creator_id=user.id,
-                                          format=ResourceFormat.flashcard)
+    resource_in1 = ResourceCreateInternal(
+        name="og", private=True, creator_id=user.id, format=ResourceFormat.flashcard
+    )
     resource_db = crud.resource.create(session, obj_in=resource_in1)
     og_id = resource_db.id
     og_creator_id = resource_db.creator.id
-    resource_in = ResourceUpdate(name='new', private=False,
-                                 format=ResourceFormat.pdf)
+    resource_in = ResourceUpdate(name="new", private=False, format=ResourceFormat.pdf)
     resource_updated_db = crud.resource.update(
         session, db_obj=resource_db, obj_in=resource_in
     )
     assert resource_updated_db == resource_db
     assert resource_updated_db.id == og_id
-    assert resource_updated_db.name == 'new'
+    assert resource_updated_db.name == "new"
     assert not resource_updated_db.private
     assert resource_updated_db.format == ResourceFormat.pdf
     assert resource_updated_db.creator.id == og_creator_id
@@ -311,19 +333,19 @@ def test_update(session):
 
 def test_base_update_with_dict(session):
     user = create_random_user(session)
-    resource_in1 = ResourceCreateInternal(name='og', private=True,
-                                          creator_id=user.id,
-                                          format=ResourceFormat.flashcard)
+    resource_in1 = ResourceCreateInternal(
+        name="og", private=True, creator_id=user.id, format=ResourceFormat.flashcard
+    )
     resource_db = crud.resource.create(session, obj_in=resource_in1)
     og_id = resource_db.id
     og_creator_id = resource_db.creator.id
-    resource_in = {'name': 'new', 'private': False, 'format': 'pdf'}
+    resource_in = {"name": "new", "private": False, "format": "pdf"}
     resource_updated_db = crud.resource.update(
         session, db_obj=resource_db, obj_in=resource_in
     )
     assert resource_updated_db == resource_db
     assert resource_updated_db.id == og_id
-    assert resource_updated_db.name == 'new'
+    assert resource_updated_db.name == "new"
     assert not resource_updated_db.private
     assert resource_updated_db.format == ResourceFormat.pdf
     assert resource_updated_db.creator.id == og_creator_id
@@ -346,24 +368,24 @@ def test_user_update_with_dict(session):
     user_db = create_random_user(session)
     og_id = user_db.id
     og_hash_pw = user_db.hashed_password
-    user_in = {'email': 'new@def.com', 'password': '456'}
+    user_in = {"email": "new@def.com", "password": "456"}
     user_updated_db = crud.user.update(session, db_obj=user_db, obj_in=user_in)
     assert user_updated_db == user_db  # session should refresh db obj
     assert user_updated_db.id == og_id
     assert user_updated_db.hashed_password != og_hash_pw
-    assert user_updated_db.email == 'new@def.com'
+    assert user_updated_db.email == "new@def.com"
 
 
 def test_user_update_without_password(session):
     user_db = create_random_user(session)
     og_id = user_db.id
     og_hash_pw = user_db.hashed_password
-    user_in = UserUpdate(email='new@def.com')  # type: ignore
+    user_in = UserUpdate(email="new@def.com")  # type: ignore
     user_updated_db = crud.user.update(session, db_obj=user_db, obj_in=user_in)
     assert user_updated_db == user_db  # session should refresh db obj
     assert user_updated_db.id == og_id
     assert user_updated_db.hashed_password == og_hash_pw
-    assert user_updated_db.email == 'new@def.com'
+    assert user_updated_db.email == "new@def.com"
 
 
 def test_goal_resource_link(session):
@@ -378,10 +400,10 @@ def test_goal_resource_link(session):
         teacher_id=teacher.id,
         student_id=student.id,
         group_id=group.id,
-        start_date='2022-08-01',  # type: ignore
-        end_date='2199-07-30',  # type: ignore
+        start_date="2022-08-01",  # type: ignore
+        end_date="2199-07-30",  # type: ignore
         accuracy=0.80,  # type: ignore
-        n_trials=5  # type: ignore
+        n_trials=5,  # type: ignore
     )
     goal = crud.goal.create(session, obj_in=goal_in)
 
@@ -435,15 +457,13 @@ def test_create_lap(session):
 
 
 def test_create_attempts(session):
-    goal = create_random_goals_with_resources(
-        session, n=1, n_rsc_per=2, n_cards_per=3
-    )
+    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=2, n_cards_per=3)
     for resource in goal.resources:
         lap = create_random_laps(session, goal, resource)
         for card in resource.cards:
-            attempt_in = AttemptCreateExternal(lap_id=lap.id,
-                                               card_id=card.id,
-                                               submission='00 not correct 00')
+            attempt_in = AttemptCreateExternal(
+                lap_id=lap.id, card_id=card.id, submission="00 not correct 00"
+            )
             attempt_in = AttemptCreateInternal.from_orm(attempt_in)
             attempt_in.correct = is_correct(attempt_in.submission, card.answer)
             attempt = crud.attempt.create(session, obj_in=attempt_in)
@@ -470,8 +490,7 @@ def test_remove_resource_associated_with_standard(session):
 
 def test_remove_resource_associated_with_goal(session):
     # if a resource is associated with a goal, it cannot be deleted.
-    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1,
-                                              n_cards_per=1)
+    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1, n_cards_per=1)
     resource = goal.resources[0]
     print(goal.resources)
     # with pytest.raises(sqlalchemy.exc.IntegrityError):
@@ -488,8 +507,7 @@ def test_remove_resource_cascade_delete_cards(session):
 
 
 def test_remove_resource_associated_with_lap(session):
-    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1,
-                                              n_cards_per=1)
+    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1, n_cards_per=1)
     resource = goal.resources[0]
     create_random_laps(session, goal, resource, 1)
     with pytest.raises(sqlalchemy.exc.IntegrityError):
@@ -502,8 +520,7 @@ def test_remove_resource_after_goal_deletion(session):
 
 
 def test_remove_goal_associated_with_lap(session):
-    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1,
-                                              n_cards_per=1)
+    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1, n_cards_per=1)
     resource = goal.resources[0]
     create_random_laps(session, goal, resource, 1)
     with pytest.raises(sqlalchemy.exc.IntegrityError):
@@ -513,8 +530,7 @@ def test_remove_goal_associated_with_lap(session):
 
 
 def test_remove_resource_after_lap_deletion(session):
-    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1,
-                                              n_cards_per=1)
+    goal = create_random_goals_with_resources(session, n=1, n_rsc_per=1, n_cards_per=1)
     assert len(goal.resources) == 1
     resource = goal.resources[0]
     lap = create_random_laps(session, goal, resource, 1)

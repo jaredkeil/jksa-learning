@@ -6,7 +6,7 @@ from sqlmodel import SQLModel
 
 from alembic import context
 
-from app.models import User # need to import at least one from here to detect
+from app.models import User  # need to import at least one from here to detect
 from app.core.config import settings
 
 # this is the Alembic Config object, which provides
@@ -88,7 +88,7 @@ def run_migrations_online() -> None:
     """
 
     alembic_config = config.get_section(config.config_ini_section)
-    alembic_config['sqlalchemy.url'] = get_url()
+    alembic_config["sqlalchemy.url"] = get_url()
 
     connectable = engine_from_config(
         alembic_config,
@@ -98,9 +98,7 @@ def run_migrations_online() -> None:
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection,
-            target_metadata=target_metadata,
-            compare_type=True
+            connection=connection, target_metadata=target_metadata, compare_type=True
         )
 
         with context.begin_transaction():
