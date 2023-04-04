@@ -31,7 +31,7 @@ jobs:
 #          done
 
     - name: Run pytest
-      run: docker compose --env-file=.env.test exec --user app web poetry run ./scripts/run_pytest.sh
+      run: docker compose --env-file=.env.test exec --user app web ./scripts/run_pytest.sh
 
     - name: Stop services
       run: docker-compose --env-file=.env.test down
