@@ -16,4 +16,4 @@ jobs:
 
     - name: Build and run tests
       run: |
-        docker-compose up --abort-on-container-exit --build
+        docker-compose --env-file=.env.test up --abort-on-container-exit --build
