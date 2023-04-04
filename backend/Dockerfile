@@ -39,6 +39,7 @@ RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; els
 
 COPY ./app /app
 RUN chmod +x run.sh
+RUN mkdir /app/cov
 
 ENV PYTHONPATH=/app
 
