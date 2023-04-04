@@ -1,9 +1,9 @@
 from fastapi.testclient import TestClient
-from pydantic import EmailStr
+from pydantic import EmailStr, SecretStr
 from sqlmodel import Session
 
 from app import crud
-from app.core.config import settings
+from app.core.config import Settings
 from app.models import UserCreate, User, UserUpdate
 from app.tests.tools.mock_params import random_password
 
@@ -14,7 +14,7 @@ def get_user_from_token_headers(client: TestClient, auth_headers: dict) -> User:
 
 
 def user_authentication_headers(
-    *, client: TestClient, email: str, password: str
+    *, client: TestClient, email: str, password: str | SecretStr
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
     response = client.post("auth/login", data=data)
@@ -22,11 +22,13 @@ def user_authentication_headers(
     return {"Authorization": f"Bearer {auth_token}"}
 
 
-def get_superuser_token_headers(client: TestClient) -> dict[str, str]:
+def get_superuser_token_headers(
+    client: TestClient, test_settings: Settings
+) -> dict[str, str]:
     return user_authentication_headers(
         client=client,
-        email=settings.FIRST_SUPERUSER,
-        password=settings.FIRST_SUPERUSER_PW,
+        email=test_settings.FIRST_SUPERUSER,
+        password=test_settings.FIRST_SUPERUSER_PW,
     )
 
 

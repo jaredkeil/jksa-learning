@@ -1,10 +1,14 @@
 import logging
+from functools import lru_cache
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from .core.config import settings
+from .core.config import Settings
 from .controller.api import api_router
+
+
+settings = Settings()
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)

@@ -5,7 +5,7 @@ from string import ascii_uppercase
 from sqlmodel import Session
 
 from app import crud
-from app.core.config import settings
+from app.core.config import Settings
 from app.database import engine
 from app.models import (
     UserCreate,
@@ -22,6 +22,7 @@ from app.models import (
     Card,
 )
 
+settings = Settings()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
@@ -140,5 +141,5 @@ def dummy_cards(session: Session, resources: list[Resource]) -> list[list[Card]]
 
 if __name__ == "__main__":
     superuser = create_first_superuser()
-    if settings.ENVIRONMENT == "dev":
+    if settings.API_ENV == "DEV":
         dummy_data(superuser)

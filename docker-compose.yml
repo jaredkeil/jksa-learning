@@ -1,0 +1,62 @@
+version: "3"
+services:
+  db:
+    container_name: ${DB_SERVER}
+    image: postgres:14  # https://hub.docker.com/_/postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - app-db-data:/var/lib/postgresql/data/pgdata
+    environment:
+      # This optional variable can be used to define another location -
+      # like a subdirectory - for the database files.
+      - PGDATA=/var/lib/postgresql/data/pgdata
+      - POSTGRES_SERVER=${DB_SERVER}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+
+  # pgadmin:
+  #   container_name: pgadmin4_container
+  #   image: dpage/pgadmin4
+  #   restart: always
+  #   environment:
+  #     PGADMIN_DEFAULT_EMAIL: admin@admin.com
+  #     PGADMIN_DEFAULT_PASSWORD: root
+  #   ports:
+  #     - "5050:80"
+
+  web:
+    container_name: backend
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      - db
+    # links:
+    #   - ${POSTGRES_SERVER}:${POSTGRES_SERVER}
+    # env_file:
+    #   - .env
+    ports:
+      - "8080:8000"
+    volumes:
+      - ./backend/app:/app
+      - ./backend/assets:/assets
+    environment:
+      - API_ENV=${ENV}
+      # - DATABASE_URL=${DB_URL}
+      - POSTGRES_SERVER=${DB_SERVER}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - FIRST_SUPERUSER=${FIRST_SUPERUSER}
+      - FIRST_SUPERUSER_PW=${FIRST_SUPERUSER_PW}
+      - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://localhost:8000"]
+      - JWT_SECRET=${SECRET_KEY}
+
+volumes:
+  app-db-data:
+
+# networks:
+#       jksanetwork:
+#           driver: bridge

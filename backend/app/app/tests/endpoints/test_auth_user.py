@@ -1,5 +1,4 @@
 from app import crud
-from app.core.config import settings
 from app.models import Role, UserCreate, UserRead
 from app.tests.tools.mock_data import create_random_user, pprint_dict
 from app.tests.tools.mock_params import random_email
@@ -112,12 +111,12 @@ def test_login_incorrect_password(client, session):
     assert "access_token" not in data
 
 
-def test_get_me_normal_user(client, normal_user_token_headers):
+def test_get_me_normal_user(client, normal_user_token_headers, test_settings):
     response = client.get("/user/me", headers=normal_user_token_headers)
     data = response.json()
     assert response.status_code == 200
     assert data
-    assert data["email"] == settings.EMAIL_TEST_USER
+    assert data["email"] == test_settings.EMAIL_TEST_USER
     assert not data["is_superuser"]
     assert data["first_name"] is None
     assert data["last_name"] is None
@@ -149,7 +148,7 @@ def test_get_all_users_as_non_superuser(client, session, normal_user_token_heade
     assert response.status_code == 400
 
 
-def test_update_me_normal_user(client, session, normal_user_token_headers):
+def test_update_me_normal_user(client, session, normal_user_token_headers, test_settings):
     og_user_db = get_user_from_token_headers(client, normal_user_token_headers)
     og_hash = og_user_db.hashed_password
     response = client.patch(
@@ -159,7 +158,7 @@ def test_update_me_normal_user(client, session, normal_user_token_headers):
     )
     data = response.json()
     user_db = get_user_from_token_headers(client, normal_user_token_headers)
-    assert data["email"] == settings.EMAIL_TEST_USER  # no change
+    assert data["email"] == test_settings.EMAIL_TEST_USER  # no change
     assert data["first_name"] == "Mulberry"
     assert data["first_name"] == user_db.first_name
     assert data["last_name"] == "Chancellor"

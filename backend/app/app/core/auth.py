@@ -7,7 +7,6 @@ from sqlmodel import Session
 from jose import jwt
 
 from app import crud
-from app.core.config import settings
 from app.core.security import verify_password
 from app.models import User
 
@@ -42,12 +41,15 @@ def authenticate(
     return user
 
 
-def create_access_token(*, subject: str) -> str:
+def create_access_token(*, subject: str, exp: int, key: SecretStr, algo: str) -> str:
     """
-    Encode a subject into a JWT token that has some preset claims, using
-    secret key and algorithm from app Settings.
+    Encode a subject into a JWT token that has some preset claims.
 
     :param subject: The string, such as a username, to be encoded
+    :param exp: When the access token will expire
+    :param key: The JWT secret key used to encode token
+    :param algo: The algorithm used to encode token
+
     :return: A JWT token as a string
     """
     # The "exp" (expiration time) claim identifies the expiration time on
@@ -63,10 +65,10 @@ def create_access_token(*, subject: str) -> str:
         claims={
             "type": "access_token",
             "exp": datetime.utcnow()
-            + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES),
+            + timedelta(minutes=exp),
             "iat": datetime.utcnow(),
             "sub": str(subject),
         },
-        key=settings.JWT_SECRET,
-        algorithm=settings.ALGORITHM,
+        key=str(key),
+        algorithm=algo,
     )

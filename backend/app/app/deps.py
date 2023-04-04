@@ -1,3 +1,4 @@
+from functools import lru_cache
 from typing import Generator, Optional
 
 from fastapi import Depends, HTTPException, status, Query
@@ -6,9 +7,14 @@ from pydantic import BaseModel
 from sqlmodel import Session
 
 from .core.auth import oauth2_scheme
-from .core.config import settings
+from .core.config import Settings
 from .database import engine
 from .models import User, Role
+
+
+@lru_cache()
+def get_settings():
+    return Settings()
 
 
 class Token(BaseModel):
@@ -32,7 +38,9 @@ def get_session() -> Generator:
 
 
 async def get_current_user(
-    session: Session = Depends(get_session), token: str = Depends(oauth2_scheme)
+    session: Session = Depends(get_session),
+    token: str = Depends(oauth2_scheme),
+    settings: Settings = Depends(get_settings),
 ) -> User:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
@@ -42,7 +50,7 @@ async def get_current_user(
     try:
         payload = jwt.decode(
             token=token,
-            key=settings.JWT_SECRET,
+            key=str(settings.JWT_SECRET),
             algorithms=[settings.ALGORITHM],
             options={"verify_aud": False},
         )

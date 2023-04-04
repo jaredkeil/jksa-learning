@@ -1,7 +1,7 @@
 from starlette import status
 
 from app import crud
-from app.core.config import settings
+# from app.core.config import settings
 from app.models import ResourceFormat, ResourceCreateInternal, UserRead
 from app.tests.tools.mock_data import (
     create_random_resource,
@@ -16,7 +16,7 @@ from app.tests.tools.mock_user import get_user_from_token_headers
 """ Create """
 
 
-def test_create_resource_minimal(normal_user_token_headers, client):
+def test_create_resource_minimal(normal_user_token_headers, client, test_settings):
     response = client.post(
         "/resource/",
         headers=normal_user_token_headers,
@@ -29,10 +29,10 @@ def test_create_resource_minimal(normal_user_token_headers, client):
     assert data["name"] == "My First Resource"
     assert data["private"]
     assert data["format"] == ResourceFormat.flashcard
-    assert data["creator"]["email"] == settings.EMAIL_TEST_USER
+    assert data["creator"]["email"] == test_settings.EMAIL_TEST_USER
 
 
-def test_create_resource_all_fields(normal_user_token_headers, client):
+def test_create_resource_all_fields(normal_user_token_headers, client, test_settings):
     response = client.post(
         "/resource/",
         headers=normal_user_token_headers,
@@ -49,7 +49,7 @@ def test_create_resource_all_fields(normal_user_token_headers, client):
     assert data["name"] == "A Fully flushed out resource"
     assert not data["private"]
     assert data["format"] == ResourceFormat.pdf
-    assert data["creator"]["email"] == settings.EMAIL_TEST_USER
+    assert data["creator"]["email"] == test_settings.EMAIL_TEST_USER
 
 
 def test_create_resource_without_token(client):

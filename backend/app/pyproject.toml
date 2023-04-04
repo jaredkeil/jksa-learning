@@ -40,6 +40,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.pydantic-pycharm-plugin.acceptable-types]
 # Allow EmailStr field to accept str
 EmailStr = ["str"]
+SecretStr = ["str"]
 
 [tool.pydantic-pycharm-plugin]
 # You can set highlight level (default is "weak_warning")

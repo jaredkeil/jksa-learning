@@ -5,8 +5,10 @@ from fastapi.security import OAuth2PasswordRequestForm
 from pydantic import SecretStr
 from sqlalchemy.orm.session import Session
 
-from app import deps, crud
+from app import crud
 from app.core.auth import authenticate, create_access_token
+from app.core.config import Settings
+from app.deps import get_session, get_settings
 from app.models import UserRead, UserCreate
 
 router = APIRouter()
@@ -15,8 +17,9 @@ router = APIRouter()
 # @router.post("/login", response_model=deps.Token)
 @router.post("/login")
 def login(
-    session: Session = Depends(deps.get_session),
+    session: Session = Depends(get_session),
     form_data: OAuth2PasswordRequestForm = Depends(),
+    settings: Settings = Depends(get_settings),
 ) -> Any:
     """
     Get the JWT for a user with data from OAuth2 request form body.
@@ -29,7 +32,12 @@ def login(
     if not user:
         raise HTTPException(400, "Incorrect username or password")
     return {
-        "access_token": create_access_token(subject=str(user.id)),
+        "access_token": create_access_token(
+            subject=str(user.id),
+            exp=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+            key=settings.JWT_SECRET,
+            algo=settings.ALGORITHM,
+        ),
         "token_type": "bearer",
         "user": UserRead.from_orm(user),
     }
@@ -38,7 +46,7 @@ def login(
 @router.post("/signup", response_model=UserRead, status_code=201)
 def create_user_signup(
     *,
-    session: Session = Depends(deps.get_session),
+    session: Session = Depends(get_session),
     user_in: UserCreate,
 ) -> Any:
     """
