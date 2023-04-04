@@ -15,14 +15,23 @@ jobs:
     - name: 'Create env file'
       run: echo "${{ secrets.ENV_FILE }}" > .env.test
 
-    - name: Build Docker image
-      run: docker compose --env-file=.env.test build
+    - name: Build and start Docker image
+      run: docker compose --env-file=.env.test up -d --build
 
-    - name: Start services
-      run: docker-compose up -d
-
-    - name: Wait for backend service availability
-      run: dockerize -wait http://web:8000 -timeout 60s
+#    - name: Wait for backend service availability
+#      run: |
+#          for i in {1..12}; do
+#            if curl -s --max-time 60 localhost:8080 -o /dev/null; then
+#              echo "Service is up!"
+#              break
+#            else
+#              echo "Service is not yet up. Retrying in 5 seconds..."
+#              sleep 5
+#            fi
+#          done
 
     - name: Run pytest
       run: docker compose --env-file=.env.test exec web poetry run ./scripts/run_pytest.sh
+
+    - name: Stop services
+      run: docker-compose --env-file=.env.test  down
