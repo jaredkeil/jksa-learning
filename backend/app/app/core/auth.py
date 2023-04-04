@@ -1,10 +1,10 @@
-from typing import Optional, MutableMapping
 from datetime import datetime, timedelta
+from typing import Optional, MutableMapping
 
 from fastapi.security import OAuth2PasswordBearer
+from jose import jwt
 from pydantic import SecretStr
 from sqlmodel import Session
-from jose import jwt
 
 from app import crud
 from app.core.security import verify_password
@@ -14,13 +14,14 @@ JWTPayloadMapping = MutableMapping[str, (datetime | bool | str | list[str] | lis
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token")
 
+
 # oauth2_scheme = OAuth2PasswordBearer(
 #     tokenUrl=f"{settings.API_V1_STR}/auth/login"
 # )
 
 
 def authenticate(
-    *, email: str, password: SecretStr, session: Session
+        *, email: str, password: SecretStr, session: Session
 ) -> Optional[User]:
     """
     Verify a password against the hashed password for a given email/username
@@ -65,7 +66,7 @@ def create_access_token(*, subject: str, exp: int, key: SecretStr, algo: str) ->
         claims={
             "type": "access_token",
             "exp": datetime.utcnow()
-            + timedelta(minutes=exp),
+                   + timedelta(minutes=exp),
             "iat": datetime.utcnow(),
             "sub": str(subject),
         },

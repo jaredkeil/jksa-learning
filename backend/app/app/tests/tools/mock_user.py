@@ -1,5 +1,5 @@
 from fastapi.testclient import TestClient
-from pydantic import EmailStr, SecretStr
+from pydantic import EmailStr
 from sqlmodel import Session
 
 from app import crud
@@ -14,26 +14,27 @@ def get_user_from_token_headers(client: TestClient, auth_headers: dict) -> User:
 
 
 def user_authentication_headers(
-    *, client: TestClient, email: str, password: str | SecretStr
+        *, client: TestClient, email: str, password: str
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
+    print(data)
     response = client.post("auth/login", data=data)
     auth_token = response.json()["access_token"]
     return {"Authorization": f"Bearer {auth_token}"}
 
 
 def get_superuser_token_headers(
-    client: TestClient, test_settings: Settings
+        client: TestClient, test_settings: Settings
 ) -> dict[str, str]:
     return user_authentication_headers(
         client=client,
         email=test_settings.FIRST_SUPERUSER,
-        password=test_settings.FIRST_SUPERUSER_PW,
+        password=test_settings.FIRST_SUPERUSER_PW.get_secret_value(),
     )
 
 
 def authentication_token_from_email(
-    client: TestClient, session: Session, email: str | EmailStr
+        client: TestClient, session: Session, email: str | EmailStr
 ) -> dict[str, str]:
     """
     Return a valid token for the user with given email.

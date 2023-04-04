@@ -33,10 +33,6 @@ services:
       dockerfile: Dockerfile
     depends_on:
       - db
-    # links:
-    #   - ${POSTGRES_SERVER}:${POSTGRES_SERVER}
-    # env_file:
-    #   - .env
     ports:
       - "8080:8000"
     volumes:
@@ -57,6 +53,6 @@ services:
 volumes:
   app-db-data:
 
-# networks:
-#       jksanetwork:
-#           driver: bridge
+#networks:
+#  jksanetwork:
+#    driver: bridge

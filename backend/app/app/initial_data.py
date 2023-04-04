@@ -2,11 +2,13 @@ import logging
 from itertools import cycle
 from string import ascii_uppercase
 
+from fastapi import Depends
 from sqlmodel import Session
 
 from app import crud
 from app.core.config import Settings
 from app.database import engine
+from app.deps import get_settings
 from app.models import (
     UserCreate,
     UserRead,
@@ -22,12 +24,12 @@ from app.models import (
     Card,
 )
 
-settings = Settings()
+# settings = Settings()
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
 
 
-def create_first_superuser():
+def create_first_superuser(settings: Settings):
     with Session(engine) as session:
         user = crud.user.get_by_email(session, email=settings.FIRST_SUPERUSER)
         if not user:
@@ -140,6 +142,7 @@ def dummy_cards(session: Session, resources: list[Resource]) -> list[list[Card]]
 
 
 if __name__ == "__main__":
-    superuser = create_first_superuser()
-    if settings.API_ENV == "DEV":
+    run_settings = get_settings()
+    superuser = create_first_superuser(run_settings)
+    if run_settings.API_ENV == "DEV":
         dummy_data(superuser)

@@ -13,9 +13,16 @@ jobs:
       uses: actions/checkout@v3
 
     - name: 'Create env file'
-      run: |
-        echo "${{ secrets.ENV_FILE }}" > .env.test
+      run: echo "${{ secrets.ENV_FILE }}" > .env.test
 
-    - name: Build and run tests
-      run: |
-        docker-compose --env-file=.env.test up --abort-on-container-exit --build
+    - name: Build Docker image
+      run: docker compose --env-file=.env.test --build
+
+    - name: Start services
+      run: docker-compose up -d
+
+    - name: Wait for backend service availability
+      run: dockerize -wait http://web:8000 -timeout 60s
+
+    - name: Run pytest
+      run: docker compose --env-file=.env.test exec web poetry run ./scripts/run_pytest.sh
