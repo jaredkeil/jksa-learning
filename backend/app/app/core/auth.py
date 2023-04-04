@@ -65,8 +65,7 @@ def create_access_token(*, subject: str, exp: int, key: SecretStr, algo: str) ->
     return jwt.encode(
         claims={
             "type": "access_token",
-            "exp": datetime.utcnow()
-                   + timedelta(minutes=exp),
+            "exp": datetime.utcnow() + timedelta(minutes=exp),
             "iat": datetime.utcnow(),
             "sub": str(subject),
         },
