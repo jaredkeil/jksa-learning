@@ -1,0 +1,6 @@
+[run]
+source = app
+omit = app/tests/*
+
+[report]
+skip_covered = True
