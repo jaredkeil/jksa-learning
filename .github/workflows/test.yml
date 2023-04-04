@@ -16,7 +16,7 @@ jobs:
       run: echo "${{ secrets.ENV_FILE }}" > .env.test
 
     - name: Build Docker image
-      run: docker compose --env-file=.env.test --build
+      run: docker compose --env-file=.env.test build
 
     - name: Start services
       run: docker-compose up -d
