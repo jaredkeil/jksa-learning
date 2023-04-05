@@ -20,12 +20,12 @@ RUN poetry build && poetry run pip install dist/*.whl
 
 FROM python:3.11-slim as final
 ENV PYTHONDONTWRITEBYTECODE 1
-RUN set -ex \
-    && apt-get update \
-    && apt-get upgrade -y \
-RUN set -ex apt-get autoremove -y \\
-    && apt-get clean -y \\
-    && rm -rf /var/lib/apt/lists/*
+#RUN set -ex \
+#    && apt-get update \
+#    && apt-get upgrade -y \
+#RUN set -ex apt-get autoremove -y \
+#    && apt-get clean -y \
+#    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app $HOME
