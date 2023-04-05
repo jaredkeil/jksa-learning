@@ -32,7 +32,7 @@ RUN chown -R app:app $HOME
 #ENV PYTHONPATH=/app
 COPY --from=builder /app/.venv ./.venv
 COPY app/run.sh /app/prestart.sh ./app/
-RUN chmod +x run.sh
+RUN chmod +x /app/run.sh
 USER app
 ENV PATH="/app/.venv/bin:$PATH"
 CMD ["./run.sh"]
