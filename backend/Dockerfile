@@ -31,8 +31,8 @@ RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app $HOME
 #ENV PYTHONPATH=/app
 COPY --from=builder /app/.venv ./.venv
-COPY app/run.sh /app/prestart.sh ./app/
-RUN chmod +x /app/run.sh
+COPY app/run.sh /app/prestart.sh ./
+RUN chmod +x run.sh
 USER app
 ENV PATH="/app/.venv/bin:$PATH"
 CMD ["./run.sh"]
