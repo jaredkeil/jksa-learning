@@ -2,8 +2,9 @@
 
 echo "User: $(whoami)"
 export COVERAGE_FILE=/app/cov/.coverage
-. $(poetry env info --path)/bin/activate
+#. $(poetry env info --path)/bin/activate
+.
 
 set -x
 #pytest --cov=app --cov-report=term-missing app/tests "${@}"
-pytest app/tests "${@}"
+pytest --pyargs app.tests "${@}"

@@ -1,54 +1,38 @@
-FROM python:3.11
+FROM python:3.11-slim-bullseye as base
+ARG API_ENV
+ENV PYTHONFAULTHANDLER=1 \
+    PYTHONHASHSEED=random \
+    PYTHONUNBUFFERED=1
+WORKDIR /app
 
-# create the 'app' user
-RUN addgroup --system app && adduser --system --group app
-
-WORKDIR /app/
-
-# https://docs.python.org/3/using/cmdline.html#envvar-PYTHONDONTWRITEBYTECODE
-# Prevents Python from writing .pyc files to disk
-ENV PYTHONDONTWRITEBYTECODE 1
-
-# ensures that the python output is sent straight to terminal (e.g. your container log)
-# without being first buffered and that you can see the output of your application (e.g. django logs)
-# in real time. Equivalent to python -u: https://docs.python.org/3/using/cmdline.html#cmdoption-u
-ENV PYTHONUNBUFFERED 1
-
-# Install Poetry
-ENV POETRY_VERSION=1.4.2
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VENV=/opt/poetry-venv
-ENV POETRY_CACHE_DIR=/opt/.cache
-
-# Install poetry separated from system interpreter
-RUN python3 -m venv $POETRY_VENV \
-    && $POETRY_VENV/bin/pip install -U pip setuptools \
-    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
-
-# Add `poetry` to PATH
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
-
-
-# Copy poetry.lock* in case it doesn't exist in the repo
+FROM base as builder
+ENV PIP_DEFAULT_TIMEOUT=100 \
+    PIP_DISABLE_PIP_VERSION_CHECK=1 \
+    PIP_NO_CACHE_DIR=1 \
+    POETRY_VERSION=1.4.2
+RUN pip install poetry==${POETRY_VERSION}
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/
-
-# Allow installing dev dependencies to run tests
-ARG INSTALL_DEV=true
-RUN bash -c "if [ $INSTALL_DEV == 'true' ] ; then poetry install --no-root ; else poetry install --no-root --no-dev ; fi"
-
-
+RUN poetry config virtualenvs.in-project true
+RUN poetry install --no-root --no-ansi --no-interaction  \
+    $(if [ "${API_ENV}" = "prod" ]; then echo "only main";fi)
 COPY ./app /app
-RUN chmod +x run.sh
-RUN mkdir /app/cov
+RUN poetry build && poetry run pip install dist/*.whl
 
-ENV PYTHONPATH=/app
-
-# chown all the files to the app user
+FROM python:3.11-slim as final
+ENV PYTHONDONTWRITEBYTECODE 1
+RUN set -ex \
+    && apt-get update \
+    && apt-get upgrade -y \
+RUN set -ex apt-get autoremove -y \\
+    && apt-get clean -y \\
+    && rm -rf /var/lib/apt/lists/*
+WORKDIR /app
+RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app $HOME
-
-# Switch to a non-root user
+#ENV PYTHONPATH=/app
+COPY --from=builder /app/.venv ./.venv
+COPY app/run.sh /app/prestart.sh ./app/
+RUN chmod +x run.sh
 USER app
-
-# Run the run script, it will check for an /app/prestart.sh script (e.g. for migrations)
-# And then will start Uvicorn
+ENV PATH="/app/.venv/bin:$PATH"
 CMD ["./run.sh"]

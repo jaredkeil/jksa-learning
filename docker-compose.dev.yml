@@ -5,9 +5,12 @@ services:
       - app-db-data:/var/lib/postgresql/data/pgdata
 
   web:
-    volumes:
-      - ./backend/app:/app
-      - ./backend/assets:/assets
+#    volumes:
+#      - ./backend/app:/app
+#      - ./backend/assets:/assets
+    build:
+      args:
+        - POETRY_WITH_DEV=--with-dev
 
 volumes:
   app-db-data:

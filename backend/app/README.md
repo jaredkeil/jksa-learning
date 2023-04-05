@@ -32,6 +32,11 @@ $ docker compose exec web poetry run alembic check
 
 #### CI/CD
 
+Build and start containers locally
+```
+docker compose -f docker-compose.yml -f docker-compose.dev.yml --env-file=.env.test up -d --build
+```
+
 Run pytests in docker
 ```
 docker compose exec web poetry run ./scripts/run_pytest.sh

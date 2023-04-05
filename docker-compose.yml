@@ -21,6 +21,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - API_ENV=${ENV}
     depends_on:
       - db
     ports:

@@ -1,8 +1,8 @@
 #!/bin/sh
 
 #export SQLALCHEMY_DATABASE_URI=${DATABASE_URL}  # from docker-compose yml services.web.environment
-
-. $(poetry env info --path)/bin/activate
+#set -e
+ls -la
 
 # If there's a prestart.sh script in the /app directory or other path specified, run it before starting
  PRE_START_PATH=${PRE_START_PATH:-/app/prestart.sh}
@@ -21,6 +21,6 @@ export PORT=${PORT:-8000}  # should be routed in docker-compose.yml
 export BACKEND_CORS_ORIGINS=${BACKEND_CORS_ORIGINS}
 export LOG_LEVEL=
 
-# Run gunicorn
+# Run gunicorn/uvicorn
 #exec uvicorn --reload --host $HOST --port $PORT --log-level debug "$APP_MODULE" --reload-exclude "test_*.py"
-exec gunicorn --reload --bind $HOST:$PORT  "$APP_MODULE" -k uvicorn.workers.UvicornWorker -w 5 --log-level debug
+exec gunicorn --reload --bind $HOST:$PORT  "$APP_MODULE" -k uvicorn.workers.UvicornWorker -w 1 --log-level debug
