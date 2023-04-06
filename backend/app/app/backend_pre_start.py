@@ -1,12 +1,11 @@
 import logging
 
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
-from sqlmodel import Session, select
 
 from app.database import SessionLocal
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('app.backend_pre_start')
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1

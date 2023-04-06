@@ -2,7 +2,6 @@ import logging
 from itertools import cycle
 from string import ascii_uppercase
 
-from fastapi import Depends
 from sqlmodel import Session
 
 from app import crud
@@ -24,9 +23,8 @@ from app.models import (
     Card,
 )
 
-# settings = Settings()
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('app.initial_data')
 
 
 def create_first_superuser(settings: Settings):
@@ -141,8 +139,12 @@ def dummy_cards(session: Session, resources: list[Resource]) -> list[list[Card]]
     return resources_cards
 
 
-if __name__ == "__main__":
+def main():
     run_settings = get_settings()
     superuser = create_first_superuser(run_settings)
     if run_settings.API_ENV == "DEV":
         dummy_data(superuser)
+
+
+if __name__ == "__main__":
+    main()

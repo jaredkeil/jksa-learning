@@ -16,10 +16,11 @@ RUN poetry config virtualenvs.in-project true
 RUN poetry install --no-root --no-ansi --no-interaction  \
     $(if [ "${API_ENV}" = "prod" ]; then echo "only main";fi)
 COPY ./app /app
-RUN poetry build && poetry run pip install dist/*.whl
+RUN poetry build && poetry run pip install --no-deps dist/*.whl
 
-FROM python:3.11-slim as final
-ENV PYTHONDONTWRITEBYTECODE 1
+FROM python:3.11-slim-bullseye as final
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED 1
 #RUN set -ex \
 #    && apt-get update \
 #    && apt-get upgrade -y \
@@ -28,10 +29,10 @@ ENV PYTHONDONTWRITEBYTECODE 1
 #    && rm -rf /var/lib/apt/lists/*
 WORKDIR /app
 RUN addgroup --system app && adduser --system --group app
-RUN chown -R app:app $HOME
 #ENV PYTHONPATH=/app
 COPY --from=builder /app/.venv ./.venv
 COPY app/run.sh /app/prestart.sh ./
+RUN chown -R app:app /app/
 RUN chmod +x run.sh
 USER app
 ENV PATH="/app/.venv/bin:$PATH"
