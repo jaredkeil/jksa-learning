@@ -8,12 +8,11 @@ on:
     branches:
       - master
   workflow_dispatch:
-
-inputs:
-  ref:
-    description: 'The Git reference to checkout'
-    required: false
-    default: 'master'
+    inputs:
+      ref:
+        description: 'The Git reference to checkout'
+        required: false
+        default: 'master'
 
 jobs:
   build:
