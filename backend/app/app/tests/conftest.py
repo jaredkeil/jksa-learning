@@ -59,14 +59,14 @@ def client_fixture(session: Session, test_settings: Settings):
 
 @pytest.fixture(name="superuser_token_headers")
 def superuser_token_headers_fixture(
-        client: TestClient, test_settings: Settings
+    client: TestClient, test_settings: Settings
 ) -> dict[str, str]:
     return get_superuser_token_headers(client, test_settings)
 
 
 @pytest.fixture(name="normal_user_token_headers")
 def normal_user_token_headers_fixture(
-        client: TestClient, session: Session, test_settings: Settings
+    client: TestClient, session: Session, test_settings: Settings
 ) -> dict[str, str]:
     return authentication_token_from_email(
         client=client, session=session, email=test_settings.EMAIL_TEST_USER

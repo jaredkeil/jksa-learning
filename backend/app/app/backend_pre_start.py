@@ -5,7 +5,7 @@ from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixe
 from app.database import SessionLocal
 
 logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger('app.backend_pre_start')
+logger = logging.getLogger("app.backend_pre_start")
 
 max_tries = 60 * 5  # 5 minutes
 wait_seconds = 1
