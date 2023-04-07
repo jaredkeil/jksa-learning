@@ -148,7 +148,9 @@ def test_get_all_users_as_non_superuser(client, session, normal_user_token_heade
     assert response.status_code == 400
 
 
-def test_update_me_normal_user(client, session, normal_user_token_headers, test_settings):
+def test_update_me_normal_user(
+    client, session, normal_user_token_headers, test_settings
+):
     og_user_db = get_user_from_token_headers(client, normal_user_token_headers)
     og_hash = og_user_db.hashed_password
     response = client.patch(

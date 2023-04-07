@@ -14,7 +14,7 @@ def get_user_from_token_headers(client: TestClient, auth_headers: dict) -> User:
 
 
 def user_authentication_headers(
-        *, client: TestClient, email: str, password: str
+    *, client: TestClient, email: str, password: str
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
     print(data)
@@ -24,7 +24,7 @@ def user_authentication_headers(
 
 
 def get_superuser_token_headers(
-        client: TestClient, test_settings: Settings
+    client: TestClient, test_settings: Settings
 ) -> dict[str, str]:
     return user_authentication_headers(
         client=client,
@@ -34,7 +34,7 @@ def get_superuser_token_headers(
 
 
 def authentication_token_from_email(
-        client: TestClient, session: Session, email: str | EmailStr
+    client: TestClient, session: Session, email: str | EmailStr
 ) -> dict[str, str]:
     """
     Return a valid token for the user with given email.

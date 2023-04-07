@@ -24,7 +24,7 @@ from app.models import (
 )
 
 logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('app.initial_data')
+logger = logging.getLogger("app.initial_data")
 
 
 def create_first_superuser(settings: Settings):

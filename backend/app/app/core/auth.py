@@ -21,7 +21,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login/access-token")
 
 
 def authenticate(
-        *, email: str, password: SecretStr, session: Session
+    *, email: str, password: SecretStr, session: Session
 ) -> Optional[User]:
     """
     Verify a password against the hashed password for a given email/username
