@@ -7,16 +7,24 @@ on:
   pull_request:
     branches:
       - master
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment:
       name: test
+    inputs:
+      ref:
+        description: 'The Git reference to checkout'
+        required: false
+        default: 'master'
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
+      with:
+        ref: ${{ inputs.ref }}
 
     - name: 'Create env file'
       run: echo "${{ secrets.ENV_FILE }}" > .env.test
