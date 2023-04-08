@@ -7,11 +7,11 @@ from sqlmodel import SQLModel, create_engine
 
 from app.core.config import Settings
 
-settings = Settings()
+# settings = Settings()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-engine = create_engine(url=settings.SQLALCHEMY_DATABASE_URI, echo=False)
+engine = create_engine(url=Settings().SQLALCHEMY_DATABASE_URI, echo=False)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

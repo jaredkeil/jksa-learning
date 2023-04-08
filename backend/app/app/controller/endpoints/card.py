@@ -16,25 +16,33 @@ from app.models import (
 router = APIRouter()
 
 
-@router.post("/", status_code=201, response_model=CardReadWithResource)
-def create_card(
+@router.post("/", status_code=201, response_model=ResourceReadWithCards)
+def create_cards(
     *,
-    card_in: CardCreate,
+    cards_in: CardCreate | list[CardCreate],
     current_user: User = Depends(get_current_user),
     session: Session = Depends(get_session),
 ) -> Any:
     """
-    Create a flashcard for a resource.
+    Create flashcards for a resource.
     """
-    resource = crud.resource.get(session, card_in.resource_id)
+
+    if not isinstance(cards_in, list):
+        cards_in = [cards_in]
+
+    resource_id = cards_in[0].resource_id
+    if not all(c.resource_id == resource_id for c in cards_in):
+        raise HTTPException(400, "All cards must belong to the same resource")
+
+    resource = crud.resource.get(session, resource_id)
 
     if not resource:
-        raise HTTPException(404, f"Resource with ID {card_in.resource_id} not found")
+        raise HTTPException(404, f"Resource with ID {resource_id} not found")
     if current_user != resource.creator:
         raise HTTPException(401, f"Not creator of Resource with ID {resource.id}.")
 
-    card = crud.card.create(session, obj_in=card_in)
-    return card
+    cards = crud.card.create_multi(session, objs_in=cards_in)
+    return cards
 
 
 @router.get("/{card_id}", status_code=200, response_model=CardReadWithResource)

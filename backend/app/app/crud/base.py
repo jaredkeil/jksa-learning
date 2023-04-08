@@ -25,17 +25,17 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         return session.exec(select(self.model).where(self.model.id.in_(ids))).all()
 
     def get_multi(
-        self, session: Session, *, skip: int = 0, limit: int = 5000
+            self, session: Session, *, skip: int = 0, limit: int = 5000
     ) -> List[ModelType]:
         stmt = select(self.model).order_by(self.model.id).offset(skip).limit(limit)
         return session.exec(stmt).all()
 
     def create(
-        self,
-        session: Session,
-        *,
-        obj_in: CreateSchemaType,
-        extras: Optional[dict[str, Any]] = None
+            self,
+            session: Session,
+            *,
+            obj_in: CreateSchemaType,
+            extras: Optional[dict[str, Any]] = None
     ) -> ModelType:
         db_obj = self.model.from_orm(obj_in, update=extras)
         session.add(db_obj)
@@ -43,12 +43,21 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType]):
         session.refresh(db_obj)
         return db_obj
 
+    def create_multi(self, session: Session, *, objs_in: list[CreateSchemaType]
+                     ) -> list[ModelType]:
+        db_objs = [self.model.from_orm(obj_in) for obj_in in objs_in]
+        session.add_all(db_objs)
+        session.commit()
+        for db_obj in db_objs:
+            session.refresh(db_obj)
+        return db_objs
+
     @staticmethod
     def update(
-        session: Session,
-        *,
-        db_obj: ModelType,
-        obj_in: Union[UpdateSchemaType, Dict[str, Any]]
+            session: Session,
+            *,
+            db_obj: ModelType,
+            obj_in: Union[UpdateSchemaType, Dict[str, Any]]
     ) -> ModelType:
         obj_data = jsonable_encoder(db_obj)
         if isinstance(obj_in, dict):

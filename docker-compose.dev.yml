@@ -5,12 +5,20 @@ services:
       - app-db-data:/var/lib/postgresql/data/pgdata
 
   web:
-#    volumes:
-#      - ./backend/app:/app
-#      - ./backend/assets:/assets
+    volumes:
+      - ./backend/app:/app
+      - ./backend/assets:/assets
     build:
-      args:
-        - POETRY_WITH_DEV=--with-dev
+      dockerfile: Dockerfile-dev
+
+  frontend:
+    build:
+      dockerfile: Dockerfile-dev
+    volumes:
+      - ./frontend/jksa-app:/app
+#      - /app/node_modules
+    ports:
+      - "3000:8080"
 
 volumes:
   app-db-data:
