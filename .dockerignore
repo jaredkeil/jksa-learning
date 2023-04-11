@@ -1,10 +1,9 @@
 # Files ignored when building docker images:
 # https://docs.docker.com/engine/reference/builder/#dockerignore-file
-.venv
+.novenv
 venv
 env
-*.DS_Store
-*__pycache__
+.DS_Store
+__pycache__
 .dockerignore
 Dockerfile
-frontend/

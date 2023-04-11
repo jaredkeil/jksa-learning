@@ -148,9 +148,8 @@ def test_get_all_users_as_non_superuser(client, session, normal_user_token_heade
     assert response.status_code == 400
 
 
-def test_update_me_normal_user(
-    client, session, normal_user_token_headers, test_settings
-):
+def test_update_me_normal_user(client, session, normal_user_token_headers,
+                               test_settings):
     og_user_db = get_user_from_token_headers(client, normal_user_token_headers)
     og_hash = og_user_db.hashed_password
     response = client.patch(
@@ -171,7 +170,7 @@ def test_update_me_normal_user(
 
 
 def test_update_me_password_email_normal_user(
-    client, session, normal_user_token_headers
+        client, session, normal_user_token_headers
 ):
     user = get_user_from_token_headers(client, normal_user_token_headers)
     og_user_db = crud.user.get(session, user.id)
@@ -203,7 +202,7 @@ def test_update_me_password_email_normal_user(
 def test_update_me_invalid_password(client, session, normal_user_token_headers):
     response = client.patch(
         "/user/me",
-        json={"email": "new@ex.com", "password": "short"},
+        json={"email": "new1@ex.com", "password": "short"},
         headers=normal_user_token_headers,
     )
     assert response.status_code == 422
@@ -211,12 +210,12 @@ def test_update_me_invalid_password(client, session, normal_user_token_headers):
 
 
 def test_update_me_normal_user_non_allowed_fields(
-    client, session, normal_user_token_headers
+        client, session, normal_user_token_headers
 ):
     # verify body keys not actually in UserUpdate object are ignored
     response = client.patch(
         "/user/me",
-        json={"email": "new@ex.com", "is_superuser": True},
+        json={"email": "new2@ex.com", "is_superuser": True},
         headers=normal_user_token_headers,
     )
     data = response.json()
@@ -224,7 +223,7 @@ def test_update_me_normal_user_non_allowed_fields(
     assert response.status_code == 200
     user = get_user_from_token_headers(client, normal_user_token_headers)
     user_db = crud.user.get(session, user.id)
-    assert user_db.email == "new@ex.com"
-    assert data["email"] == "new@ex.com"
+    assert user_db.email == "new2@ex.com"
+    assert data["email"] == "new2@ex.com"
     assert not user_db.is_superuser
     assert not data["is_superuser"]

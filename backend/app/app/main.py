@@ -26,7 +26,7 @@ app.add_middleware(
 
 @app.on_event("startup")
 def on_startup():
-    logger.info("on_event app on_startup")
+    logger.info("Completed app startup")
 
 
 @app.get("/", status_code=200)

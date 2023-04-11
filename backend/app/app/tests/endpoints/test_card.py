@@ -22,10 +22,81 @@ def test_create_card(client, session, normal_user_token_headers):
         headers=normal_user_token_headers,
     )
     data = response.json()
-    assert data["question"] == "Who am I?"
-    assert data["answer"] == f"You are {user.email}"
-    assert data["resource"] == ResourceRead.from_orm(resource).dict()
-    assert "cards" not in data["resource"]
+    assert data["cards"][0]["question"] == "Who am I?"
+    assert data["cards"][0]["answer"] == f"You are {user.email}"
+    assert data["name"] == resource.name
+    assert data["format"] == resource.format
+    assert data["private"] == resource.private
+    assert data["id"] == resource.id
+    assert "resource" not in data["cards"]
+
+
+def test_create_card_no_data(client, normal_user_token_headers):
+    response = client.post(
+        "/card/",
+        json={},
+        headers=normal_user_token_headers,
+    )
+    assert response.status_code == 422
+
+
+def test_create_cards_multi(client, session, normal_user_token_headers):
+    user = get_user_from_token_headers(client, normal_user_token_headers)
+    resource = create_random_resources(session, user, 1)
+    response = client.post(
+        "/card/",
+        json=[
+            {
+                "question": "Who am I?",
+                "answer": f"You are {user.email}",
+                "resource_id": resource.id
+            },
+            {
+                "question": "What are you?",
+                "answer": f"You are a {user.role}",
+                "resource_id": resource.id
+            },
+            {
+                "question": "Public or private?",
+                "answer": resource.private,
+                "resource_id": resource.id
+            }
+        ],
+        headers=normal_user_token_headers,
+    )
+    data = response.json()
+    assert len(data["cards"]) == 3
+    # check a couple data point
+    assert data["cards"][0]["answer"] == f"You are {user.email}"
+    assert data["cards"][2]["answer"] == str(resource.private)
+    assert data["name"] == resource.name
+    assert data["format"] == resource.format
+    assert data["private"] == resource.private
+    assert data["id"] == resource.id
+    assert "resource" not in data["cards"]
+
+
+def test_create_cards_multi_mismatch_resource_id(client, session,
+                                                 normal_user_token_headers):
+    user = get_user_from_token_headers(client, normal_user_token_headers)
+    resource = create_random_resources(session, user, 1)
+    response = client.post(
+        "/card/",
+        json=[
+            {
+                "question": "Who am I?",
+                "answer": f"You are {user.email}",
+                "resource_id": resource.id
+            },
+            {
+                "question": "What are you?",
+                "answer": f"You are a {user.role}",
+                "resource_id": resource.id + 1
+            },
+        ],
+        headers=normal_user_token_headers,
+    )
+    assert response.status_code == 400
 
 
 def test_create_card_non_resource_creator(client, session, normal_user_token_headers):

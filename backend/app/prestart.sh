@@ -10,11 +10,12 @@ echo "Done checking availability"
 #python /app/.venv/lib/python3.11/site-packages/app/migration_commands.py db_revision_cmd --autogenerate -m "before launch"
 #python /app/.venv/lib/python3.11/site-packages/app/migration_commands.py db_upgrade_cmd head
 
-APP_PACKAGE_PATH=$(pip show "app" | grep Location | cut -d ' ' -f 2)
-#/app/.venv/lib/python3.11/site-packages/app/alembic.ini
-export ALEMBIC_CONFIG="${APP_PACKAGE_PATH}/app/alembic.ini"
-echo "ALEMBIC_CONFIG: $ALEMBIC_CONFIG"
+#APP_PACKAGE_PATH=$(pip show "app" | grep Location | cut -d ' ' -f 2)
+#echo "(APP_PACKAGE_PATH=$APP_PACKAGE_PATH)"
+## prod: /app/.venv/lib/python3.11/site-packages/app/alembic.ini
+#export ALEMBIC_CONFIG="${APP_PACKAGE_PATH}/app/alembic.ini"
 
+echo "(ALEMBIC_CONFIG=$ALEMBIC_CONFIG)"
 echo "Generating an Alembic revision, before launch"
 alembic revision --autogenerate -m "before launch"
 echo "Revision generated"
