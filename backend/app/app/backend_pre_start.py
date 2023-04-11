@@ -2,7 +2,7 @@ import logging
 
 from tenacity import after_log, before_log, retry, stop_after_attempt, wait_fixed
 
-from app.database import SessionLocal
+from app.database import get_local_session
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger('app.backend_pre_start')
@@ -19,7 +19,7 @@ wait_seconds = 1
 )
 def init() -> None:
     try:
-        session = SessionLocal()
+        session = get_local_session()
         # Try to create session to check if DB is awake
         session.execute("SELECT 1")
         session.close()

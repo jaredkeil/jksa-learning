@@ -1,10 +1,15 @@
 import pytest
 from fastapi.testclient import TestClient
+from pydantic import PostgresDsn
+from pytest import FixtureRequest
+from pytest_postgresql.executor_noop import NoopExecutor
+from pytest_postgresql.factories import postgresql_noproc
+from pytest_postgresql.janitor import DatabaseJanitor
 from sqlalchemy.engine import Engine
 from sqlmodel import Session, SQLModel, create_engine
 
-from app.core.config import PROJECT_ROOT, Settings
-from app.deps import get_session, get_settings
+from app.core.config import Settings
+from app.deps import get_session
 from app.initial_data import create_first_superuser
 from app.main import app
 from app.tests.tools.mock_user import (
@@ -12,46 +17,69 @@ from app.tests.tools.mock_user import (
     authentication_token_from_email,
 )
 
+settings = Settings()
+
+postgresql_external = postgresql_noproc(
+    host=settings.POSTGRES_SERVER,
+    user=settings.POSTGRES_USER,
+    password=settings.POSTGRES_PASSWORD,
+    dbname=settings.POSTGRES_DB,
+)
+
 
 @pytest.fixture(name="test_settings", scope="session")
-def settings_fixture():
-    return Settings(_env_file=PROJECT_ROOT / ".env.test")
+def settings_fixture() -> Settings:
+    return settings
 
 
 @pytest.fixture(scope="session")
-def engine(test_settings: Settings) -> Engine:
-    return create_engine(test_settings.SQLALCHEMY_DATABASE_URI)
+def engine(request: FixtureRequest):
+    """ Initialize a fresh testing db (for each xdist worker), yield an engine"""
+    noop_exec: NoopExecutor = request.getfixturevalue("postgresql_external")
+    with DatabaseJanitor(
+            user=noop_exec.user,
+            host=noop_exec.host,
+            port=noop_exec.port,
+            dbname=noop_exec.dbname,
+            version=noop_exec.version,
+            password=noop_exec.password,
+    ):
+        uri = PostgresDsn.build(
+            scheme="postgresql",
+            user=noop_exec.user,
+            password=noop_exec.password,
+            host=noop_exec.host,
+            path=f"/{noop_exec.dbname}",
+        )
+        engine = create_engine(uri)
+        db_setup(engine)
+        yield engine
+    engine.dispose()
 
 
-@pytest.fixture(scope="session")
-def tables(engine: Engine, test_settings: Settings):
-    SQLModel.metadata.drop_all(engine)  # in case final drop_all failed
-    SQLModel.metadata.create_all(engine)
-    create_first_superuser(test_settings)
-    yield
-    # SQLModel.metadata.drop_all(engine)
+def db_setup(db_engine: Engine) -> None:
+    """Perform all necessary table creation.
+    Could probably use Alembic as well
+    """
+    SQLModel.metadata.create_all(db_engine)
 
 
-@pytest.fixture(name="session", scope="function")
-def session_fixture(engine, tables):
-    with engine.connect() as connection:
-        with connection.begin() as transaction:
-            with Session(connection) as sess:
-                yield sess
-            transaction.rollback()
+@pytest.fixture(name="session")
+def session_fixture(engine: Engine):
+    with Session(engine) as session:
+        for table in reversed(SQLModel.metadata.sorted_tables):
+            session.execute(table.delete())
+        session.commit()
+        create_first_superuser(settings, session)
+        yield session
 
 
 @pytest.fixture(name="client", scope="function")
-def client_fixture(session: Session, test_settings: Settings):
+def client_fixture(session: Session):
     def get_session_override():
         return session
 
-    def get_settings_override():
-        return test_settings
-
     app.dependency_overrides[get_session] = get_session_override
-    app.dependency_overrides[get_settings] = get_settings_override
-
     client = TestClient(app)
     yield client
     app.dependency_overrides.clear()
@@ -59,15 +87,15 @@ def client_fixture(session: Session, test_settings: Settings):
 
 @pytest.fixture(name="superuser_token_headers")
 def superuser_token_headers_fixture(
-        client: TestClient, test_settings: Settings
+        client: TestClient, session: Session
 ) -> dict[str, str]:
-    return get_superuser_token_headers(client, test_settings)
+    return get_superuser_token_headers(client, session, settings)
 
 
 @pytest.fixture(name="normal_user_token_headers")
 def normal_user_token_headers_fixture(
-        client: TestClient, session: Session, test_settings: Settings
+        client: TestClient, session: Session
 ) -> dict[str, str]:
     return authentication_token_from_email(
-        client=client, session=session, email=test_settings.EMAIL_TEST_USER
+        client=client, session=session, email=settings.EMAIL_TEST_USER
     )

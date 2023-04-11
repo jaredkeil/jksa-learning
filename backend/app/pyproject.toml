@@ -30,6 +30,9 @@ pytest-cov = "^4.0.0"
 pytest-sugar = "^0.9.6"
 pytest-icdiff = "^0.6"
 black = "^23.3.0"
+pytest-xdist = "^3.2.1"
+python-dotenv = "^1.0.0"
+pytest-postgresql = "^4.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0", "setuptools>=57.0.0", "wheel>=0.37.0"]
@@ -46,3 +49,9 @@ SecretStr = ["str"]
 # You can select it from "warning",  "weak_warning", "disable"
 acceptable-type-highlight = "disable"
 
+[tool.pytest.ini_options]
+#addopts = "-p app.tests.env_cmd"
+#testpaths = [
+#    "tests",
+#    "integration",
+#]

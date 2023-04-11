@@ -34,7 +34,7 @@ class Settings(BaseSettings):
 
     @validator("API_ENV", pre=True)
     def assemble_api_env(cls, v: str) -> str:
-        if v.upper() not in ("DEV", "TEST", "STAGING", "PROD"):
+        if v.upper() not in ("LOCAL", "DEV", "TEST", "STAGING", "PROD"):
             raise ValueError(v)
         return v.upper()
 
@@ -81,11 +81,9 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER_PW: SecretStr = ""
     EMAIL_TEST_USER: EmailStr = "test@example.com"
 
-    # class Config:
-    #     # Useful for local development
-    #     case_sensitive = True
-    #     # env_file = "../../.env"
-    #     env_file = PROJECT_ROOT / ".env"
+    class Config:
+        case_sensitive = True
+        env_file = PROJECT_ROOT / ".env.local"
 
 
 # settings = Settings()

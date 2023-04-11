@@ -1,21 +1,25 @@
 FROM python:3.11-slim-bullseye
 RUN addgroup --system app && adduser --system --group app
 WORKDIR /app
+
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     POETRY_VERSION=1.4.2 \
     POETRY_HOME=/opt/poetry \
     POETRY_VENV=/opt/poetry-venv \
     POETRY_CACHE_DIR=/opt/.cache
+
 RUN python3 -m venv $POETRY_VENV \
     && $POETRY_VENV/bin/pip install -U pip setuptools \
     && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+
 ENV PATH="${PATH}:${POETRY_VENV}/bin"
 COPY ./app/pyproject.toml ./app/poetry.lock* /app/
-RUN poetry install --no-root --no-ansi --no-interaction
+RUN poetry install --no-ansi --no-interaction
+
 COPY ./app /app
 RUN chmod +x run.sh
 ENV PYTHONPATH=/app
-RUN chown -R app:app $HOME
+RUN chown -R app:app /app/
 USER app
 CMD ["./run.sh"]

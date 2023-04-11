@@ -5,14 +5,36 @@ from sqlalchemy import Table
 from sqlalchemy.orm import sessionmaker
 from sqlmodel import SQLModel, create_engine
 
+# from app.deps import get_settings
+
 from app.core.config import Settings
 
-# settings = Settings()
+settings = Settings()
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-engine = create_engine(url=Settings().SQLALCHEMY_DATABASE_URI, echo=False)
-SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+
+# def singleton(func):
+#     instance = None
+#
+#     def wrapper(*args, **kwargs):
+#         nonlocal instance
+#         if instance is None:
+#             instance = func(*args, **kwargs)
+#         return instance
+#     return wrapper
+#
+#
+# # @singleton
+# def get_engine(uri: str):
+#     engine = create_engine(url=uri, echo=False)
+#     return engine
+
+engine = create_engine(url=settings.SQLALCHEMY_DATABASE_URI, echo=False)
+
+
+def get_local_session():
+    return sessionmaker(autocommit=False, autoflush=False, bind=engine)()
 
 
 # def create_db_and_tables():

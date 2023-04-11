@@ -45,7 +45,7 @@ trio = ["trio (>=0.16,<0.22)"]
 name = "attrs"
 version = "22.2.0"
 description = "Classes Without Boilerplate"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -507,6 +507,21 @@ dnspython = ">=1.15.0"
 idna = ">=2.0.0"
 
 [[package]]
+name = "execnet"
+version = "1.9.0"
+description = "execnet: rapid multi-Python deployment"
+category = "dev"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+files = [
+    {file = "execnet-1.9.0-py2.py3-none-any.whl", hash = "sha256:a295f7cc774947aac58dde7fdc85f4aa00c42adf5d8f5468fc630c1acf30a142"},
+    {file = "execnet-1.9.0.tar.gz", hash = "sha256:8f694f3ba9cc92cab508b152dcfe322153975c29bda272e2fd7f3f00f36e47c5"},
+]
+
+[package.extras]
+testing = ["pre-commit"]
+
+[[package]]
 name = "fastapi"
 version = "0.95.0"
 description = "FastAPI framework, high performance, easy to learn, fast to code, ready for production"
@@ -708,7 +723,7 @@ files = [
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -815,6 +830,21 @@ files = [
 ]
 
 [[package]]
+name = "mirakuru"
+version = "2.5.1"
+description = "Process executor (not only) for tests."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "mirakuru-2.5.1-py3-none-any.whl", hash = "sha256:0a16f897841741f8cd784f790e54d74e61456ba36be9cb9de731b49e2e7a45dc"},
+    {file = "mirakuru-2.5.1.tar.gz", hash = "sha256:5a60d641fa92c8bfcd383f6e52f7a0bf3f081da0467fc6e3e6a3f6b3e3e47a7b"},
+]
+
+[package.dependencies]
+psutil = {version = ">=4.0.0", markers = "sys_platform != \"cygwin\""}
+
+[[package]]
 name = "mypy-extensions"
 version = "1.0.0"
 description = "Type system extensions for programs checked with the mypy type checker."
@@ -830,7 +860,7 @@ files = [
 name = "packaging"
 version = "23.0"
 description = "Core utilities for Python packages"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -891,7 +921,7 @@ test = ["appdirs (==1.4.4)", "covdefaults (>=2.3)", "pytest (>=7.2.2)", "pytest-
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.6"
 files = [
@@ -904,6 +934,18 @@ dev = ["pre-commit", "tox"]
 testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
+name = "port-for"
+version = "0.6.3"
+description = "Utility that helps with local TCP ports management. It can find an unused TCP localhost port and remember the association."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "port-for-0.6.3.tar.gz", hash = "sha256:232bd999015b7fbdf19f90f3a9298cc742252d67650108123940bfc75c6f4d4e"},
+    {file = "port_for-0.6.3-py3-none-any.whl", hash = "sha256:31860afde6cb552e1830c927def3288350c8fbbe9aea8aed8150ed9d1aa0de81"},
+]
+
+[[package]]
 name = "pprintpp"
 version = "0.4.0"
 description = "A drop-in replacement for pprint that's actually pretty"
@@ -914,6 +956,33 @@ files = [
     {file = "pprintpp-0.4.0-py2.py3-none-any.whl", hash = "sha256:b6b4dcdd0c0c0d75e4d7b2f21a9e933e5b2ce62b26e1a54537f9651ae5a5c01d"},
     {file = "pprintpp-0.4.0.tar.gz", hash = "sha256:ea826108e2c7f49dc6d66c752973c3fc9749142a798d6b254e1e301cfdbc6403"},
 ]
+
+[[package]]
+name = "psutil"
+version = "5.9.4"
+description = "Cross-platform lib for process and system monitoring in Python."
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
+files = [
+    {file = "psutil-5.9.4-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:c1ca331af862803a42677c120aff8a814a804e09832f166f226bfd22b56feee8"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_i686.whl", hash = "sha256:68908971daf802203f3d37e78d3f8831b6d1014864d7a85937941bb35f09aefe"},
+    {file = "psutil-5.9.4-cp27-cp27m-manylinux2010_x86_64.whl", hash = "sha256:3ff89f9b835100a825b14c2808a106b6fdcc4b15483141482a12c725e7f78549"},
+    {file = "psutil-5.9.4-cp27-cp27m-win32.whl", hash = "sha256:852dd5d9f8a47169fe62fd4a971aa07859476c2ba22c2254d4a1baa4e10b95ad"},
+    {file = "psutil-5.9.4-cp27-cp27m-win_amd64.whl", hash = "sha256:9120cd39dca5c5e1c54b59a41d205023d436799b1c8c4d3ff71af18535728e94"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_i686.whl", hash = "sha256:6b92c532979bafc2df23ddc785ed116fced1f492ad90a6830cf24f4d1ea27d24"},
+    {file = "psutil-5.9.4-cp27-cp27mu-manylinux2010_x86_64.whl", hash = "sha256:efeae04f9516907be44904cc7ce08defb6b665128992a56957abc9b61dca94b7"},
+    {file = "psutil-5.9.4-cp36-abi3-macosx_10_9_x86_64.whl", hash = "sha256:54d5b184728298f2ca8567bf83c422b706200bcbbfafdc06718264f9393cfeb7"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_i686.manylinux2010_i686.manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:16653106f3b59386ffe10e0bad3bb6299e169d5327d3f187614b1cb8f24cf2e1"},
+    {file = "psutil-5.9.4-cp36-abi3-manylinux_2_12_x86_64.manylinux2010_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:54c0d3d8e0078b7666984e11b12b88af2db11d11249a8ac8920dd5ef68a66e08"},
+    {file = "psutil-5.9.4-cp36-abi3-win32.whl", hash = "sha256:149555f59a69b33f056ba1c4eb22bb7bf24332ce631c44a319cec09f876aaeff"},
+    {file = "psutil-5.9.4-cp36-abi3-win_amd64.whl", hash = "sha256:fd8522436a6ada7b4aad6638662966de0d61d241cb821239b2ae7013d41a43d4"},
+    {file = "psutil-5.9.4-cp38-abi3-macosx_11_0_arm64.whl", hash = "sha256:6001c809253a29599bc0dfd5179d9f8a5779f9dffea1da0f13c53ee568115e1e"},
+    {file = "psutil-5.9.4.tar.gz", hash = "sha256:3d7f9739eb435d4b1338944abe23f49584bde5395f27487d2ee25ad9a8774a62"},
+]
+
+[package.extras]
+test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "psycopg"
@@ -1159,7 +1228,7 @@ email = ["email-validator (>=1.0.3)"]
 name = "pytest"
 version = "7.2.2"
 description = "pytest: simple powerful testing with Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1197,6 +1266,22 @@ pytest = ">=4.6"
 testing = ["fields", "hunter", "process-tests", "pytest-xdist", "six", "virtualenv"]
 
 [[package]]
+name = "pytest-dotenv"
+version = "0.5.2"
+description = "A py.test plugin that parses environment files before running tests"
+category = "main"
+optional = false
+python-versions = "*"
+files = [
+    {file = "pytest-dotenv-0.5.2.tar.gz", hash = "sha256:2dc6c3ac6d8764c71c6d2804e902d0ff810fa19692e95fe138aefc9b1aa73732"},
+    {file = "pytest_dotenv-0.5.2-py3-none-any.whl", hash = "sha256:40a2cece120a213898afaa5407673f6bd924b1fa7eafce6bda0e8abffe2f710f"},
+]
+
+[package.dependencies]
+pytest = ">=5.0.0"
+python-dotenv = ">=0.9.1"
+
+[[package]]
 name = "pytest-icdiff"
 version = "0.6"
 description = "use icdiff for better error messages in pytest assertions"
@@ -1211,6 +1296,27 @@ files = [
 icdiff = "*"
 pprintpp = "*"
 pytest = "*"
+
+[[package]]
+name = "pytest-postgresql"
+version = "4.1.1"
+description = "Postgresql fixtures and fixture factories for Pytest."
+category = "main"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-postgresql-4.1.1.tar.gz", hash = "sha256:144d6af4000641decb1f0e8025d9bfdd4a0572f418c5fec7ef409b51b991295d"},
+    {file = "pytest_postgresql-4.1.1-py3-none-any.whl", hash = "sha256:e4fca93189ce7e4f306ed5974cd5fdbb988f6b18ea51d12465dd301fcace933f"},
+]
+
+[package.dependencies]
+mirakuru = ">=2.3.0"
+port-for = "*"
+pytest = ">=6.2.0"
+setuptools = "*"
+
+[package.extras]
+tests = ["pytest-cov", "pytest-xdist"]
 
 [[package]]
 name = "pytest-sugar"
@@ -1228,6 +1334,27 @@ files = [
 packaging = ">=14.1"
 pytest = ">=2.9"
 termcolor = ">=1.1.0"
+
+[[package]]
+name = "pytest-xdist"
+version = "3.2.1"
+description = "pytest xdist plugin for distributed testing, most importantly across multiple CPUs"
+category = "dev"
+optional = false
+python-versions = ">=3.7"
+files = [
+    {file = "pytest-xdist-3.2.1.tar.gz", hash = "sha256:1849bd98d8b242b948e472db7478e090bf3361912a8fed87992ed94085f54727"},
+    {file = "pytest_xdist-3.2.1-py3-none-any.whl", hash = "sha256:37290d161638a20b672401deef1cba812d110ac27e35d213f091d15b8beb40c9"},
+]
+
+[package.dependencies]
+execnet = ">=1.1"
+pytest = ">=6.2.0"
+
+[package.extras]
+psutil = ["psutil (>=3.0)"]
+setproctitle = ["setproctitle"]
+testing = ["filelock"]
 
 [[package]]
 name = "python-dotenv"
@@ -1626,4 +1753,4 @@ anyio = ">=3.0.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "eb8ffd3f4d9648cb955dc46f9537f8f9bccecd164805ceb264cc103cdb14f20b"
+content-hash = "84d6bca55255a41be2da6fb55b577a584089d0f3e1def948af183296739fa43f"

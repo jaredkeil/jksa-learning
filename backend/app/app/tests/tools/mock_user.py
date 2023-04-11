@@ -17,15 +17,16 @@ def user_authentication_headers(
         *, client: TestClient, email: str, password: str
 ) -> dict[str, str]:
     data = {"username": email, "password": password}
-    print(data)
+    print(f"Getting auth for: {data}")
     response = client.post("auth/login", data=data)
     auth_token = response.json()["access_token"]
     return {"Authorization": f"Bearer {auth_token}"}
 
 
 def get_superuser_token_headers(
-        client: TestClient, test_settings: Settings
+        client: TestClient, session: Session, test_settings: Settings
 ) -> dict[str, str]:
+    """Assumes superuser has been created during test setup"""
     return user_authentication_headers(
         client=client,
         email=test_settings.FIRST_SUPERUSER,

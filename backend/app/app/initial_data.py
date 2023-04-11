@@ -27,29 +27,27 @@ logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger('app.initial_data')
 
 
-def create_first_superuser(settings: Settings):
-    with Session(engine) as session:
-        user = crud.user.get_by_email(session, email=settings.FIRST_SUPERUSER)
-        if not user:
-            logger.info("Superuser not found. Trying to create...")
-            user_in = UserCreate(
-                email=settings.FIRST_SUPERUSER,
-                password=settings.FIRST_SUPERUSER_PW,
-            )
-            user = crud.user.create(session, obj_in=user_in)
-            crud.user.make_superuser(session, db_obj=user)
-            logger.info(f"Created superuser: {UserRead.from_orm(user)}")
-        else:
-            logger.info(f"Superuser already exists: {UserRead.from_orm(user)}")
-        return user
+def create_first_superuser(settings: Settings, session: Session):
+    user = crud.user.get_by_email(session, email=settings.FIRST_SUPERUSER)
+    if not user:
+        logger.info("Superuser not found. Trying to create...")
+        user_in = UserCreate(
+            email=settings.FIRST_SUPERUSER,
+            password=settings.FIRST_SUPERUSER_PW,
+        )
+        user = crud.user.create(session, obj_in=user_in)
+        crud.user.make_superuser(session, db_obj=user)
+        logger.info(f"Created superuser: {UserRead.from_orm(user)}")
+    else:
+        logger.info(f"Superuser already exists: {UserRead.from_orm(user)}")
+    return user
 
 
-def dummy_data(superuser: User):
-    with Session(engine) as session:
-        topics = dummy_topics(session)
-        standards = dummy_standards(session, topics)
-        resources = dummy_resources(session, superuser)
-        resources_cards = dummy_cards(session, resources)  # 3 cards per resource
+def dummy_data(superuser: User, session: Session):
+    topics = dummy_topics(session)
+    standards = dummy_standards(session, topics)
+    resources = dummy_resources(session, superuser)
+    resources_cards = dummy_cards(session, resources)  # 3 cards per resource
 
 
 def dummy_topics(session: Session, n_per_subject: int = 4) -> list[Topic]:
@@ -67,7 +65,7 @@ def dummy_topics(session: Session, n_per_subject: int = 4) -> list[Topic]:
 
 
 def dummy_standards(
-    session: Session, topics: list[Topic], n_per_topic: int = 3, n_grades: int = 5
+        session: Session, topics: list[Topic], n_per_topic: int = 3, n_grades: int = 5
 ) -> list[Standard]:
     """Create a certain number of standards for each topic"""
     standards = []
@@ -140,10 +138,11 @@ def dummy_cards(session: Session, resources: list[Resource]) -> list[list[Card]]
 
 
 def main():
-    run_settings = get_settings()
-    superuser = create_first_superuser(run_settings)
-    if run_settings.API_ENV == "DEV":
-        dummy_data(superuser)
+    settings = get_settings()
+    with Session(engine) as session:
+        superuser = create_first_superuser(settings, session)
+        if settings.API_ENV == "DEV":
+            dummy_data(superuser, settings)
 
 
 if __name__ == "__main__":

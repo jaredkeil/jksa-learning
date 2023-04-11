@@ -26,7 +26,6 @@ def create_cards(
     """
     Create flashcards for a resource.
     """
-
     if not isinstance(cards_in, list):
         cards_in = [cards_in]
 
@@ -41,8 +40,8 @@ def create_cards(
     if current_user != resource.creator:
         raise HTTPException(401, f"Not creator of Resource with ID {resource.id}.")
 
-    cards = crud.card.create_multi(session, objs_in=cards_in)
-    return cards
+    crud.card.create_multi(session, objs_in=cards_in)
+    return resource
 
 
 @router.get("/{card_id}", status_code=200, response_model=CardReadWithResource)

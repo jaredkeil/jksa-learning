@@ -63,7 +63,8 @@ async def get_current_user(
 
     user = session.get(User, token_data.username)
     if user is None:
-        raise credentials_exception
+        # raise credentials_exception
+        raise HTTPException(401, "No user with that name")
     return user
 
 
