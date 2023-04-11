@@ -33,7 +33,7 @@ jobs:
       run: docker compose --env-file=.env.test up db web -d --build
 
     - name: Run pytest in the API container
-      run: docker exec backend pytest -n 2--pyargs app.tests
+      run: docker exec backend pytest -n 2 --pyargs app.tests
 
     - name: Stop services
       run: docker-compose --env-file=.env.test down -v
