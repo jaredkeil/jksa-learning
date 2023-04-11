@@ -36,4 +36,4 @@ jobs:
       run: docker exec backend pytest -n 2 --pyargs app.tests
 
     - name: Stop services
-      run: docker-compose --env-file=.env.test down -v
+      run: docker-compose --env-file=.env.test down db web -v
