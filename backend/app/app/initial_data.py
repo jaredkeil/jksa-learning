@@ -142,7 +142,7 @@ def main():
     with Session(engine) as session:
         superuser = create_first_superuser(settings, session)
         if settings.API_ENV == "DEV":
-            dummy_data(superuser, settings)
+            dummy_data(superuser, session)
 
 
 if __name__ == "__main__":
