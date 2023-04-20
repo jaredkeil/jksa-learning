@@ -5,8 +5,6 @@ services:
     image: postgres:14  # https://hub.docker.com/_/postgres
     ports:
       - "5432:5432"
-#    volumes:
-#      - app-db-data:/var/lib/postgresql/data/pgdata
     environment:
       # This optional variable can be used to define another location -
       # like a subdirectory - for the database files.
@@ -44,4 +42,4 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-#    ports: define in override files (dev, prod)
+    # ports: defined in override files (dev, prod)
